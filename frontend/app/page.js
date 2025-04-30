@@ -1,12 +1,14 @@
-import styles from './page.module.css';
-import MainPage from './Pages/MainPage';
-export default function Home() {
+'use client';
+import { MantineProvider } from '@mantine/core';
+import '@mantine/core/styles.css';
+import Home from './Home';
+
+export default function App() {
   return (
-    <div className={styles.page}>
-      {/*edit page.module.css to change general styles for webpage */}
-      <main className={styles.main}>
-        <MainPage />
-      </main>
+    <div className='App'>
+      <MantineProvider>
+        <Home />
+      </MantineProvider>
     </div>
   );
 }
