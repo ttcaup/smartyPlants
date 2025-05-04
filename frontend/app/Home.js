@@ -41,7 +41,6 @@ export default function Home() {
                 </Card>
               );
             })}
-            ;
           </Stack>
         </Card>
       </Link>
