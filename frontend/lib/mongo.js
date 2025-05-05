@@ -1,3 +1,5 @@
+/*frontend\lib\mongo.js*/
+/*sets up MOngoDB client connetion*/
 import { MongoClient } from 'mongodb';
 
 const uri = process.env.MONGODB_URI;

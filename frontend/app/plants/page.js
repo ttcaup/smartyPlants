@@ -1,3 +1,5 @@
+/*frontend\app\plants\page.js*/
+/*manages dashboard for all plants*/
 'use client';
 import { React, useEffect, useState } from 'react';
 import PageLayout from '@/components/PageLayout';
@@ -51,25 +53,45 @@ export default function PlantDashboard() {
 
   return (
     <PageLayout>
-      <Title order={2} mb='md'>
-        My Plants
-      </Title>
-      <Grid>
+      {/* Centered "Plants" Title */}
+      <Group position="center" direction="column" mb="lg">
+        <Title order={2}>Plants</Title>
+
+        {/* Modals (Add, Edit, Delete buttons) centered below the title */}
+        <Group position="center" direction="row" mb="md">
+          <Button onClick={() => setActionMode('add')}>Add Plant</Button>
+          <Button onClick={() => setActionMode('edit')}>Edit Plant</Button>
+          <Button color="red" onClick={() => setActionMode('delete')}>
+            Delete Plant
+          </Button>
+          {actionMode && (
+            <Button
+              variant="light"
+              color="gray"
+              onClick={() => setActionMode(null)}
+            >
+              Cancel {actionMode.charAt(0).toUpperCase() + actionMode.slice(1)}
+            </Button>
+          )}
+        </Group>
+      </Group>
+
+      {/* Plant Grid: Displaying plants in rows of 3 */}
+      <Grid grow mb="lg" gutter="md">
         {plants.map((plant) => {
           const reading = getReading(plant.plant_link);
-          const cardClickable =
-            actionMode === 'edit' || actionMode === 'delete';
+          const cardClickable = actionMode === 'edit' || actionMode === 'delete';
           return (
-            <Grid.Col key={plant._id}>
+            <Grid.Col key={plant._id} span={4}>
               <Link
                 href={`plants/${plant.plant_link}`}
                 style={{ textDecoration: 'none' }}
                 onClick={(e) => handleCardClick(e, plant)}
               >
                 <Card
-                  shadow='sm'
-                  padding='lg'
-                  radius='md'
+                  shadow="sm"
+                  padding="lg"
+                  radius="md"
                   withBorder
                   style={
                     cardClickable
@@ -77,21 +99,19 @@ export default function PlantDashboard() {
                       : {}
                   }
                 >
-                  <Group justify='space-between'>
+                  <Group justify="space-between">
                     <Text fw={500}>{plant.name}</Text>
-                    <Badge
-                      color={plant.last_status === 'Healthy' ? 'green' : 'red'}
-                    >
+                    <Badge color={plant.last_status === 'Healthy' ? 'green' : 'red'}>
                       {plant.last_status}
                     </Badge>
                   </Group>
-                  <Group justify='space-between'>
-                    <Stack gap='sm'>
-                      <Group align='center'>
+                  <Group justify="space-between">
+                    <Stack gap="sm">
+                      <Group align="center">
                         <IconDroplet color={'#4069bf'} />
                         <p>Moisture: {reading.soil_moisture ?? 'N/A'}</p>
                       </Group>
-                      <Group align='center'>
+                      <Group align="center">
                         <IconBucketDroplet color={'#2d3386'} />
                         <p>Last Water: {plant.last_water ?? 'Unknown'}</p>
                       </Group>
@@ -99,7 +119,7 @@ export default function PlantDashboard() {
                     {plant.last_status === 'Healthy' ? (
                       <IconPlant size={100} color={'#2d863e'} />
                     ) : (
-                      <IconPlantOff size={100} color='red' />
+                      <IconPlantOff size={100} color="red" />
                     )}
                   </Group>
                 </Card>
@@ -108,23 +128,8 @@ export default function PlantDashboard() {
           );
         })}
       </Grid>
-      <Space h='xl' />
-      <Group mb='lg'>
-        <Button onClick={() => setActionMode('add')}>Add Plant</Button>
-        <Button onClick={() => setActionMode('edit')}>Edit Plant</Button>
-        <Button color='red' onClick={() => setActionMode('delete')}>
-          Delete Plant
-        </Button>
-        {actionMode && (
-          <Button
-            variant='light'
-            color='gray'
-            onClick={() => setActionMode(null)}
-          >
-            Cancel {actionMode.charAt(0).toUpperCase() + actionMode.slice(1)}
-          </Button>
-        )}
-      </Group>
+
+      {/* PlantAction Modals */}
       <PlantAction
         actionMode={actionMode}
         setActionMode={setActionMode}

@@ -1,9 +1,11 @@
+/*frontend\app\page.module.css*/
+/*css module for page style*/
 .page {
   --gray-rgb: 0, 0, 0;
   --gray-alpha-200: rgba(var(--gray-rgb), 0.08);
   --gray-alpha-100: rgba(var(--gray-rgb), 0.05);
 
-  --button-primary-hover: #383838;
+  --button-primary-hover: #af4242;
   --button-secondary-hover: #f2f2f2;
 
   display: grid;

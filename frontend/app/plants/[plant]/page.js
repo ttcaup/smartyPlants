@@ -1,3 +1,5 @@
+/*frontend\app\plants\[plant]\page.js*/
+/*manages individual plant's page*/ 
 'use client';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';

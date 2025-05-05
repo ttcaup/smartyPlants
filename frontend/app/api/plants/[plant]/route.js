@@ -1,3 +1,5 @@
+/*app\api\plants\[plant]\route.js*/
+/*manages specific plant's data*/
 import clientPromise from '@/lib/mongo';
 import { NextResponse } from 'next/server';
 

@@ -1,3 +1,5 @@
+/*frontend\components\ChartTabs.js*/
+/*displays charts for sensor data*/
 'use client';
 import React from 'react';
 import { Tabs, Title } from '@mantine/core';

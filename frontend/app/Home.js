@@ -1,49 +1,34 @@
-'use client';
-import { React, useState, useEffect } from 'react';
-import { Title, Group, Card, Text, Stack, Divider, Badge } from '@mantine/core';
-import { IconPlant } from '@tabler/icons-react';
-import axios from 'axios';
+import React from 'react';
+import { Title, Button, Group } from '@mantine/core';
+import { IconPlant } from '@tabler/icons-react';  // Tabler Icon
 import Link from 'next/link';
 
 export default function Home() {
-  const [plants, setPlants] = useState([]);
-  useEffect(() => {
-    axios.get('/api/plants').then((res) => setPlants(res.data));
-  }, []);
-
   return (
-    <div className='Home'>
-      <Group justify='space-between' align='center' mb='lg'>
-        <IconPlant size={32} />
-        <h1>SmartyPlants</h1>
-        <IconPlant size={32} />
+    <div className="Home">
+      {/* Centered Logo */}
+      <Group justify="center" align="center" mb="lg">
+        <img src="/images/logo.jpg" alt="SmartyPlants Logo" width={150} /> 
       </Group>
 
-      <Divider my='md' />
+      {/* "Growing Happiness" Text */}
+      <div className="text-section">
+        <Title order={1} align="left">
+          Growing Happiness
+        </Title>
+        <p>
+          Moisture, humidity, and light readings to take the best possible care of your plants.
+        </p>
+      </div>
 
-      <Link href={`/plants`} style={{ textDecoration: 'none' }}>
-        <Card padding='lg' radius='lg' withBorder>
-          <Title order={4} mb='sm'>
-            Plants
-          </Title>
-          <Stack gap='md'>
-            {plants.map((plant) => {
-              return (
-                <Card key={plant._id} padding='lg' radius='md' withBorder>
-                  <Group justify='space-between' align='center'>
-                    <Text fw={500}>{plant.name}</Text>
-                    <Badge
-                      color={plant.last_status === 'Healthy' ? 'green' : 'red'}
-                    >
-                      {plant.last_status}
-                    </Badge>
-                  </Group>
-                </Card>
-              );
-            })}
-          </Stack>
-        </Card>
-      </Link>
+      {/* Button to Link to Plants Page */}
+      <Group justify="right">
+        <Link href="/plants">
+        <Button variant="outline" color="#274e27" size="xl" radius={0}>
+           All Plants
+        </Button>
+        </Link>
+      </Group>
     </div>
   );
 }

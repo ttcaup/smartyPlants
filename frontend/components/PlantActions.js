@@ -1,3 +1,5 @@
+/*frontend\components\PlantActions.js*/
+/*modals for adding,editing, and deleting plant data*/
 'use client';
 import {
   Modal,

@@ -1,3 +1,6 @@
+/* frontend\app\layout.js*/
+/*ROOT LAYOUT*/
+
 // import './globals.css';
 
 export const metadata = {

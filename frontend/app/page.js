@@ -1,3 +1,5 @@
+/* frontend\app\page.js*/
+/*main entry point for the application */
 'use client';
 import { MantineProvider } from '@mantine/core';
 import '@mantine/core/styles.css';
