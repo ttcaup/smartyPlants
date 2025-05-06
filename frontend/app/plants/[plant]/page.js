@@ -5,7 +5,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import {
-  Title,
+  Title,  
   Text,
   Badge,
   Group,
@@ -192,8 +192,9 @@ export default function PlantPage() {
   return (
     <PageLayout>
       <div className="plant">
-        <Title order={2} mb="sm">{plantName}</Title>
-
+        <div className="plant-title">
+          <Title order={2}>{plantName}</Title>
+        </div>
         <SimpleGrid cols={2} verticalSpacing="xl">
           {/* Sensor readings card */}
           <Card className="sensor-card" padding="lg" radius="lg" withBorder>
@@ -231,7 +232,7 @@ export default function PlantPage() {
           </Card>
 
           {/* Time-filtered charts section */}
-          <div className="timeFilterGraphs">
+          <div className="timeFilterGraphs chart-fullwidth">
             <Tabs color="green" defaultValue="Day">
               <Tabs.List>
                 <Tabs.Tab value="Day" leftSection={<IconClock24 size={12} />}>Day</Tabs.Tab>

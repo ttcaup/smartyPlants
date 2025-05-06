@@ -1,22 +1,44 @@
 /*frontend\app\plants\[plant]\plantdata.css*/
 /*styling for plant data page*/
 
-/* frontend/app/plants/[plant]/plantdata.css */
-/* Styling for the Plant Data Page to match the aesthetic of the homepage and mockup */
-
-
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;700&display=swap');
+
 
 /* Main container for the plant detail page */
 .plant {
-  font-family: 'Cormorant Garamond', serif; 
-  background-color: #fffdf4;               
+  font-family: 'Cormorant Garamond', serif;             
   padding: 40px;                            /*inner spacing*/
-  background-image: url('/images/homePlant.jpg'); 
+  background-image: none; 
   background-size: cover;
   background-repeat: no-repeat;
   background-position: bottom center;
 }
+.plant-title {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+/* Specific styling for right-side action buttons */
+.action-buttons .button-styled {
+  width: 100%;
+  border-radius: 20px;
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  padding: 14px;
+  box-shadow: 4px 4px 0 #274e27;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.action-buttons .button-styled:hover {
+  transform: translateY(-2px);
+  box-shadow: 6px 6px 0 #274e27;
+}
+
+/* Optional custom button shades to match the mockup */
+.button-green-light  { background-color: #d5e8d4; color: #274e27; }
+.button-blue-light   { background-color: #dae8fc; color: #274e27; }
+.button-orange-light { background-color: #f8cecc; color: #274e27; }
 
 /* Card styling for the sensor data */
 .sensor-card {
@@ -75,9 +97,14 @@
   background-color: rgba(255, 255, 255, 0.85);
   padding: 1.5rem;
   border-radius: 20px;
+  width: 100%;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.07);
 }
 
+/* Make chart section span full width */
+.chart-fullwidth {
+  grid-column: 1 / -1; /* Spans all columns in the grid */
+}
 /* Layout for vertical tabs + chart side-by-side */
 .chart-tabs {
   display: flex;
