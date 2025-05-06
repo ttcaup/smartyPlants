@@ -5,18 +5,19 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import {
-  Title,  
+  Title,
   Text,
   Badge,
   Group,
   Stack,
   Loader,
   Button,
-  Center, 
+  Center,
   Tabs,
   Space,
   Card,
   SimpleGrid,
+  Modal,
 } from '@mantine/core';
 import PageLayout from '@/components/PageLayout';
 import { useRouter } from 'next/navigation';
@@ -36,18 +37,26 @@ import ChartTabs from '@/components/ChartTabs';
 import './plantdata.css'; // custom styling for this plant page
 
 export default function PlantPage() {
-  const { plant } = useParams();           // gets plant name from URL
-  const router = useRouter();              // for redirection
-  const [readings, setReadings] = useState([]);      
-  const [plantData, setPlantData] = useState([]);    
-  const [loading, setLoading] = useState(true);      // Loading screen toggle
+  const { plant } = useParams(); // gets plant name from URL
+  const router = useRouter(); // for redirection
+  const [readings, setReadings] = useState([]);
+  const [plantData, setPlantData] = useState([]);
+  const [loading, setLoading] = useState(true); // Loading screen toggle
   const [reloading, setReloading] = useState(false); // Reload button toggle
-  const [checking, setChecking] = useState(false);   // Check Status button toggle
+  const [checking, setChecking] = useState(false); // Check Status button toggle
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   // Fetch plant and reading data from API on mount
   useEffect(() => {
-    axios.get(`/api/readings/${plant}`).then((res) => setReadings(res.data)).catch(console.error);
-    axios.get(`/api/plants/${plant}`).then((res) => setPlantData(res.data)).catch(console.error).finally(() => setLoading(false));
+    axios
+      .get(`/api/readings/${plant}`)
+      .then((res) => setReadings(res.data))
+      .catch(console.error);
+    axios
+      .get(`/api/plants/${plant}`)
+      .then((res) => setPlantData(res.data))
+      .catch(console.error)
+      .finally(() => setLoading(false));
   }, [plant]);
 
   // Reload readings and update last_water if watered
@@ -56,14 +65,23 @@ export default function PlantPage() {
     try {
       const res = await axios.get(`/api/readings/${plant}`);
       setReadings(res.data);
-      notifications.show({ title: 'Data Reloaded', message: 'Latest sensor data fetched!' });
+      notifications.show({
+        title: 'Data Reloaded',
+        message: 'Latest sensor data fetched!',
+      });
 
       const latestWatered = res.data.find((r) => r.watered === true);
       if (latestWatered) {
-        await axios.put(`/api/plants/${plant}`, { last_water: new Date(latestWatered.timestamp).toISOString() });
+        await axios.put(`/api/plants/${plant}`, {
+          last_water: new Date(latestWatered.timestamp).toISOString(),
+        });
       }
     } catch {
-      notifications.show({ title: 'Error', message: 'Failed to reload data', color: 'red' });
+      notifications.show({
+        title: 'Error',
+        message: 'Failed to reload data',
+        color: 'red',
+      });
     } finally {
       setReloading(false);
     }
@@ -73,12 +91,19 @@ export default function PlantPage() {
   const handleWaterPlant = async () => {
     try {
       await axios.put(`/api/plants/${plant}`, { last_water: 'Today' });
-      notifications.show({ title: 'Plant Watered', message: 'Last_water updated!' });
+      notifications.show({
+        title: 'Plant Watered',
+        message: 'Last_water updated!',
+      });
 
       const updated = await axios.get(`/api/plants/${plant}`);
       setPlantData(updated.data);
     } catch {
-      notifications.show({ title: 'Error', message: 'Failed to update water time', color: 'red' });
+      notifications.show({
+        title: 'Error',
+        message: 'Failed to update water time',
+        color: 'red',
+      });
     }
   };
 
@@ -88,12 +113,19 @@ export default function PlantPage() {
     try {
       const status = calculatePlantStatus(mostRecentReading);
       await axios.put(`/api/plants/${plant}`, { last_status: status });
-      notifications.show({ title: 'Status Checked', message: `Status: ${status}` });
+      notifications.show({
+        title: 'Status Checked',
+        message: `Status: ${status}`,
+      });
 
       const updated = await axios.get(`/api/plants/${plant}`);
       setPlantData(updated.data);
     } catch {
-      notifications.show({ title: 'Error', message: 'Failed to check status', color: 'red' });
+      notifications.show({
+        title: 'Error',
+        message: 'Failed to check status',
+        color: 'red',
+      });
     } finally {
       setChecking(false);
     }
@@ -103,10 +135,17 @@ export default function PlantPage() {
   const handleDeletePlant = async () => {
     try {
       await axios.delete(`/api/plants/${plant}`);
-      notifications.show({ title: 'Plant Deleted', message: 'Redirecting to dashboard...' });
+      notifications.show({
+        title: 'Plant Deleted',
+        message: 'Redirecting to dashboard...',
+      });
       router.push('/plants');
     } catch {
-      notifications.show({ title: 'Error', message: 'Could not delete plant', color: 'red' });
+      notifications.show({
+        title: 'Error',
+        message: 'Could not delete plant',
+        color: 'red',
+      });
     }
   };
 
@@ -114,7 +153,9 @@ export default function PlantPage() {
 
   // Get most recent sensor reading
   const mostRecentReading = readings.reduce((latest, current) => {
-    return new Date(current.timestamp) > new Date(latest.timestamp) ? current : latest;
+    return new Date(current.timestamp) > new Date(latest.timestamp)
+      ? current
+      : latest;
   }, readings[0]);
 
   //calculate status for specific plants or general
@@ -183,7 +224,9 @@ export default function PlantPage() {
   if (loading || !readings.length) {
     return (
       <PageLayout>
-        <Center><Loader /></Center>
+        <Center>
+          <Loader />
+        </Center>
       </PageLayout>
     );
   }
@@ -191,15 +234,15 @@ export default function PlantPage() {
   // Main page content
   return (
     <PageLayout>
-      <div className="plant">
-        <div className="plant-title">
+      <div className='plant'>
+        <div className='plant-title'>
           <Title order={2}>{plantName}</Title>
         </div>
-        <SimpleGrid cols={2} verticalSpacing="xl">
+        <SimpleGrid cols={2} verticalSpacing='xl'>
           {/* Sensor readings card */}
-          <Card className="sensor-card" padding="lg" radius="lg" withBorder>
-            <Stack gap="xs">
-              <Group justify="space-between">
+          <Card className='sensor-card' padding='lg' radius='lg' withBorder>
+            <Stack gap='xs'>
+              <Group justify='space-between'>
                 <h3>Current Sensor Data</h3>
                 <Badge
                   className='status-badge'
@@ -212,50 +255,121 @@ export default function PlantPage() {
                   {calculatePlantStatus(mostRecentReading)}
                 </Badge>
               </Group>
-              <Group><IconDroplet color="#4069bf" /><p>Soil Moisture: {mostRecentReading.soil_moisture}</p></Group>
-              <Group><IconTemperature color="#e67700" /><p>Temperature: {mostRecentReading.temperature}°F</p></Group>
-              <Group><IconCloudRain color="#1c7ed6" /><p>Humidity: {mostRecentReading.humidity}%</p></Group>
-              <Group><IconSun color="#fab005" /><p>Light: {mostRecentReading.light}</p></Group>
-              <Group><IconBucketDroplet color="#2d3386" /><p>Last Watered: {mostRecentReading?.watered ? new Date(mostRecentReading.timestamp).toLocaleString() : plantData.last_water}</p></Group>
-              <Text size="sm" c="dimmed" mb="xs">{new Date(mostRecentReading.timestamp).toLocaleString()}</Text>
+              <Group>
+                <IconDroplet color='#4069bf' />
+                <p>Soil Moisture: {mostRecentReading.soil_moisture}</p>
+              </Group>
+              <Group>
+                <IconTemperature color='#e67700' />
+                <p>Temperature: {mostRecentReading.temperature}°F</p>
+              </Group>
+              <Group>
+                <IconCloudRain color='#1c7ed6' />
+                <p>Humidity: {mostRecentReading.humidity}%</p>
+              </Group>
+              <Group>
+                <IconSun color='#fab005' />
+                <p>Light: {mostRecentReading.light}</p>
+              </Group>
+              <Group>
+                <IconBucketDroplet color='#2d3386' />
+                <p>
+                  Last Watered:{' '}
+                  {mostRecentReading?.watered
+                    ? new Date(mostRecentReading.timestamp).toLocaleString()
+                    : plantData.last_water}
+                </p>
+              </Group>
+              <Text size='sm' c='dimmed' mb='xs'>
+                {new Date(mostRecentReading.timestamp).toLocaleString()}
+              </Text>
             </Stack>
           </Card>
 
           {/* Action buttons */}
-          <Card padding="lg" radius="lg" withBorder>
+          <Card padding='lg' radius='lg' withBorder>
             <SimpleGrid col={2}>
-              <Button onClick={handleReloadData} className="button-styled button-purple">Reload Data</Button>
-              <Button onClick={handleWaterPlant} className="button-styled button-blue">Water Plant</Button>
-              <Button onClick={handleCheckStatus} className="button-styled button-green">Check Status</Button>
-              <Button onClick={handleDeletePlant} className="button-styled button-red">Delete Plant</Button>
+              <Button
+                onClick={handleReloadData}
+                className='button-styled button-purple'
+              >
+                Reload Data
+              </Button>
+              <Button
+                onClick={handleWaterPlant}
+                className='button-styled button-blue'
+              >
+                Water Plant
+              </Button>
+              <Button
+                onClick={handleCheckStatus}
+                className='button-styled button-green'
+              >
+                Check Status
+              </Button>
+              <Button
+                onClick={() => setDeleteModalOpen(true)}
+                className='button-styled button-red'
+              >
+                Delete Plant
+              </Button>
             </SimpleGrid>
           </Card>
 
           {/* Time-filtered charts section */}
-          <div className="timeFilterGraphs chart-fullwidth">
-            <Tabs color="green" defaultValue="Day">
+          <div className='timeFilterGraphs chart-fullwidth'>
+            <Tabs color='green' defaultValue='Day'>
               <Tabs.List>
-                <Tabs.Tab value="Day" leftSection={<IconClock24 size={12} />}>Day</Tabs.Tab>
-                <Tabs.Tab value="Week" leftSection={<IconCalendarWeek size={12} />}>Week</Tabs.Tab>
-                <Tabs.Tab value="Month" leftSection={<IconCalendarMonth size={12} />}>Month</Tabs.Tab>
+                <Tabs.Tab value='Day' leftSection={<IconClock24 size={12} />}>
+                  Day
+                </Tabs.Tab>
+                <Tabs.Tab
+                  value='Week'
+                  leftSection={<IconCalendarWeek size={12} />}
+                >
+                  Week
+                </Tabs.Tab>
+                <Tabs.Tab
+                  value='Month'
+                  leftSection={<IconCalendarMonth size={12} />}
+                >
+                  Month
+                </Tabs.Tab>
               </Tabs.List>
 
-              <Tabs.Panel value="Day">
-                <Space h="xl" />
-                <ChartTabs data={filterByDays(1)} timeFilterChoice="Day" />
+              <Tabs.Panel value='Day'>
+                <Space h='xl' />
+                <ChartTabs data={filterByDays(1)} timeFilterChoice='Day' />
               </Tabs.Panel>
-              <Tabs.Panel value="Week">
-                <Space h="xl" />
-                <ChartTabs data={filterByDays(7)} timeFilterChoice="Week" />
+              <Tabs.Panel value='Week'>
+                <Space h='xl' />
+                <ChartTabs data={filterByDays(7)} timeFilterChoice='Week' />
               </Tabs.Panel>
-              <Tabs.Panel value="Month">
-                <Space h="xl" />
-                <ChartTabs data={filterByDays(30)} timeFilterChoice="Month" />
+              <Tabs.Panel value='Month'>
+                <Space h='xl' />
+                <ChartTabs data={filterByDays(30)} timeFilterChoice='Month' />
               </Tabs.Panel>
             </Tabs>
           </div>
         </SimpleGrid>
       </div>
+      <Modal
+        opened={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        title={`Delete ${plantName}?`}
+        centered
+      >
+        <Text>Are you sure you want to permanently delete this plant?</Text>
+
+        <Group justify='flex-end' mt='md'>
+          <Button variant='default' onClick={() => setDeleteModalOpen(false)}>
+            Cancel
+          </Button>
+          <Button color='red' onClick={handleDeletePlant}>
+            Delete
+          </Button>
+        </Group>
+      </Modal>
     </PageLayout>
   );
 }
