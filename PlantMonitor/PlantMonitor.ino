@@ -1,3 +1,8 @@
+/*
+Company: RNK
+Author: Eden Reader
+Date: 05/05/25
+*/
 #include <DHT.h>
 #define DHTTYPE DHT11
 #define tempPin 2
@@ -7,20 +12,20 @@ DHT dht(tempPin, DHTTYPE);
 
 void setup()
 {
-    pinMode(tempPin, INPUT_PULLUP);
-    pinMode(relayPin, OUTPUT);
-    digitalWrite(relayPin, HIGH);
+    pinMode(tempPin, INPUT_PULLUP); //pullup resistor for DHT module
+    pinMode(relayPin, OUTPUT); 
+    digitalWrite(relayPin, HIGH); //initializing relay
     Serial.begin(9600);
     Serial.println(F("Starting sensor..."));
     dht.begin();
 }
 
 bool checkMoist(float moist){
-  if(moist > 600){
+  if(moist > 1000){
     Serial.println(F("Start Watering Plant!"));
-    digitalWrite(relayPin, LOW);
+    digitalWrite(relayPin, LOW); //turn on pump for 3 sec
     delay(3000);
-    digitalWrite(relayPin, HIGH);
+    digitalWrite(relayPin, HIGH); //turn off pump
     Serial.println(F("Finished Watering Plant!"));
     return true;
   }
@@ -29,7 +34,7 @@ bool checkMoist(float moist){
 
 void loop()
 {
-    delay(10000);
+    delay(60000); //execute every one minute
 
     float moist = analogRead(0);
     float light = analogRead(1);

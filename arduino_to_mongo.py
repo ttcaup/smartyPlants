@@ -1,3 +1,7 @@
+# Company: RNK
+# Author: Eden Reader
+# Date: 05/05/25
+
 import serial
 import os
 import time
@@ -66,4 +70,3 @@ while True:
     except Exception as e:
         print("Error:", e)
 
-# 2025-05-03 22:22:53.899683+00:00
