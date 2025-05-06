@@ -1,5 +1,4 @@
-/*frontend\app\plants\[plant]\page.js*/
-/*manages individual plant's page*/ 
+/*Individual Plant Page to display plant details and offer actions*/
 'use client';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
@@ -8,7 +7,6 @@ import {
   Text,
   Badge,
   Group,
-  Divider,
   Stack,
   Loader,
   Button,
@@ -17,16 +15,16 @@ import {
   Space,
   Card,
   SimpleGrid,
-  Notification,
 } from '@mantine/core';
 import PageLayout from '@/components/PageLayout';
 import { useRouter } from 'next/navigation';
-import { notifications, Notifications } from '@mantine/notifications';
+import { notifications } from '@mantine/notifications';
 import {
   IconDroplet,
   IconTemperature,
   IconSun,
   IconCloudRain,
+  IconBucketDroplet,
   IconCalendarMonth,
   IconCalendarWeek,
   IconClock24,
@@ -36,10 +34,15 @@ import ChartTabs from '@/components/ChartTabs';
 
 export default function PlantPage() {
   const { plant } = useParams();
+  const router = useRouter();
   const [readings, setReadings] = useState([]);
   const [plantData, setPlantData] = useState([]);
   const [loading, setLoading] = useState(true);
+  //may remove later or properly implement
+  const [reloading, setReloading] = useState(false);
+  const [checking, setChecking] = useState(false);
 
+  //get data from database by calling API endpoints
   useEffect(() => {
     axios
       .get(`/api/readings/${plant}`)
@@ -53,19 +56,26 @@ export default function PlantPage() {
       .finally(() => setLoading(false));
   }, [plant]);
 
-  const router = useRouter();
-  const [reloading, setReloading] = useState(false);
-  const [checking, setChecking] = useState(false);
-
+  //callback handlers for action buttons
+  //TODO: fix lack of notification display (not displayed because the notifications.show is outside the return and thus does not render)
   const handleReloadData = async () => {
     setReloading(true);
+    let res;
+
     try {
-      const res = await axios.get(`/api/readings/${plant}`);
+      res = await axios.get(`/api/readings/${plant}`);
       setReadings(res.data);
       notifications.show({
         title: 'Data Reloaded',
         message: 'Latest sensor data fetched!',
       });
+      const latestWatered = res.data.find((r) => r.watered === true);
+
+      if (latestWatered) {
+        await axios.put(`/api/plants/${plant}`, {
+          last_water: new Date(latestWatered.timestamp).toISOString(),
+        });
+      }
     } catch (err) {
       notifications.show({
         title: 'Error',
@@ -138,12 +148,15 @@ export default function PlantPage() {
 
   const plantName = plantData.name;
 
+  //find most recent database document in readins collection
   const mostRecentReading = readings.reduce((latest, current) => {
     return new Date(current.timestamp) > new Date(latest.timestamp)
       ? current
       : latest;
   }, readings[0]);
 
+  //calculate plant status
+  //TODO: Update function for specific plants
   function calculateStatus({ soil_moisture, temperature, humidity, light }) {
     if (soil_moisture < 300) return 'Too much Water';
     if (soil_moisture > 650) return 'Needs Water';
@@ -158,32 +171,20 @@ export default function PlantPage() {
 
   const now = new Date();
 
+  //calulate time filtering by getting current date and find n days back of data
   const filterByDays = (n) => {
     const cutoff = new Date(now);
     cutoff.setDate(cutoff.getDate() - n);
     return readings.filter((r) => new Date(r.timestamp) >= cutoff);
   };
 
-  const filteredDayData = filterByDays(1);
-  const filteredWeekData = filterByDays(7);
-  const filteredMonthData = filterByDays(30);
-
-  if (loading) {
+  //if loading or no readings received from database yet, set loading overlay
+  if (loading || !readings.length) {
     return (
       <PageLayout>
         <Center>
           <Loader />
         </Center>
-      </PageLayout>
-    );
-  }
-
-  if (!readings.length) {
-    return (
-      <PageLayout>
-        <h1>{plantName}</h1>
-        <Divider mb='md' />
-        <Text>No readings found for {plantName}.</Text>
       </PageLayout>
     );
   }
@@ -194,6 +195,7 @@ export default function PlantPage() {
         <Title order={2} mb='sm'>
           {plantName}
         </Title>
+        {/*Display data from database about plant*/}
         <SimpleGrid cols={2} verticalSpacing='xl'>
           <Card padding='lg' radius='lg' withBorder>
             <Stack gap='xs'>
@@ -225,11 +227,23 @@ export default function PlantPage() {
                 <IconSun color='#fab005' />
                 <p> Light: {mostRecentReading.light}</p>
               </Group>
+              <Group>
+                <IconBucketDroplet color={'#2d3386'} />
+                {/*Date is displayed as BSON UTC, change formatting for more readable date */}
+                <p>
+                  Last Watered:{' '}
+                  {mostRecentReading?.watered
+                    ? new Date(mostRecentReading.timestamp).toLocaleString()
+                    : plantData.last_water}
+                </p>
+              </Group>
+
               <Text size='sm' c='dimmed' mb='xs'>
                 {new Date(mostRecentReading.timestamp).toLocaleString()}
               </Text>
             </Stack>
           </Card>
+          {/*Action buttons */}
           <Card padding='lg' radius='lg' withBorder>
             <SimpleGrid col={2}>
               <Button onClick={handleReloadData} color='purple'>
@@ -246,7 +260,7 @@ export default function PlantPage() {
               </Button>
             </SimpleGrid>
           </Card>
-
+          {/*Tabs to display charts filtered by time*/}
           <div className='timeFilterGraphs'>
             <Tabs color='green' defaultValue='Day'>
               <Tabs.List>
@@ -266,17 +280,18 @@ export default function PlantPage() {
                   Month
                 </Tabs.Tab>
               </Tabs.List>
+              {/*Choose number of days to filter time length and display charts */}
               <Tabs.Panel value='Day'>
                 <Space h='xl' />
-                <ChartTabs data={filteredDayData} timeFilterChoice='Day' />
+                <ChartTabs data={filterByDays(1)} timeFilterChoice='Day' />
               </Tabs.Panel>
               <Tabs.Panel value='Week'>
                 <Space h='xl' />
-                <ChartTabs data={filteredWeekData} timeFilterChoice='Week' />
+                <ChartTabs data={filterByDays(7)} timeFilterChoice='Week' />
               </Tabs.Panel>
               <Tabs.Panel value='Month'>
                 <Space h='xl' />
-                <ChartTabs data={filteredMonthData} timeFilterChoice='Month' />
+                <ChartTabs data={filterByDays(30)} timeFilterChoice='Month' />
               </Tabs.Panel>
             </Tabs>
           </div>

@@ -12,7 +12,8 @@ import {
   Title,
   Stack,
   Button,
-  Space,
+  Center,
+  Loader,
 } from '@mantine/core';
 import {
   IconDroplet,
@@ -27,14 +28,18 @@ import PlantAction from '@/components/PlantActions';
 export default function PlantDashboard() {
   const [plants, setPlants] = useState([]);
   const [readings, setReadings] = useState([]);
-  const [actionMode, setActionMode] = useState(null); // 'add' | 'edit' | 'delete' | null
+  const [loading, setLoading] = useState(true);
+  const [actionMode, setActionMode] = useState(null); // actions is either 'add', 'edit', 'delete', or null
   const [selectedPlant, setSelectedPlant] = useState(null);
 
+  //get data through API endpoints
   useEffect(() => {
     axios.get('/api/plants').then((res) => setPlants(res.data));
     axios.get('/api/readings').then((res) => setReadings(res.data));
+    setLoading(false);
   }, []);
 
+  //callback handlers for CRUD action buttons
   const getReading = (plant_link) => {
     const found = readings.find((r) => r._id === plant_link);
     return found?.latestReading || {};
@@ -45,29 +50,40 @@ export default function PlantDashboard() {
   };
   const handleCardClick = (e, plant) => {
     if (actionMode === 'edit' || actionMode === 'delete') {
-      e.preventDefault(); // Stop <Link> navigation
+      e.preventDefault(); //Stop <Link> navigation to allow for other clicking
       setSelectedPlant(plant);
       setActionMode(actionMode);
     }
   };
 
+  //if loading or no plant data or no reading data received, showing loading overlay
+  if (loading || !plants.length || !readings.length) {
+    return (
+      <PageLayout>
+        <Center>
+          <Loader />
+        </Center>
+      </PageLayout>
+    );
+  }
+
   return (
     <PageLayout>
       {/* Centered "Plants" Title */}
-      <Group position="center" direction="column" mb="lg">
+      <Group position='center' direction='column' mb='lg'>
         <Title order={2}>Plants</Title>
 
-        {/* Modals (Add, Edit, Delete buttons) centered below the title */}
-        <Group position="center" direction="row" mb="md">
+        {/* Actions (Add, Edit, Delete buttons) centered below the title */}
+        <Group position='center' direction='row' mb='md'>
           <Button onClick={() => setActionMode('add')}>Add Plant</Button>
           <Button onClick={() => setActionMode('edit')}>Edit Plant</Button>
-          <Button color="red" onClick={() => setActionMode('delete')}>
+          <Button color='red' onClick={() => setActionMode('delete')}>
             Delete Plant
           </Button>
           {actionMode && (
             <Button
-              variant="light"
-              color="gray"
+              variant='light'
+              color='gray'
               onClick={() => setActionMode(null)}
             >
               Cancel {actionMode.charAt(0).toUpperCase() + actionMode.slice(1)}
@@ -77,10 +93,11 @@ export default function PlantDashboard() {
       </Group>
 
       {/* Plant Grid: Displaying plants in rows of 3 */}
-      <Grid grow mb="lg" gutter="md">
+      <Grid grow mb='lg' gutter='md'>
         {plants.map((plant) => {
           const reading = getReading(plant.plant_link);
-          const cardClickable = actionMode === 'edit' || actionMode === 'delete';
+          const cardClickable =
+            actionMode === 'edit' || actionMode === 'delete';
           return (
             <Grid.Col key={plant._id} span={4}>
               <Link
@@ -89,9 +106,9 @@ export default function PlantDashboard() {
                 onClick={(e) => handleCardClick(e, plant)}
               >
                 <Card
-                  shadow="sm"
-                  padding="lg"
-                  radius="md"
+                  shadow='sm'
+                  padding='lg'
+                  radius='md'
                   withBorder
                   style={
                     cardClickable
@@ -99,19 +116,21 @@ export default function PlantDashboard() {
                       : {}
                   }
                 >
-                  <Group justify="space-between">
+                  <Group justify='space-between'>
                     <Text fw={500}>{plant.name}</Text>
-                    <Badge color={plant.last_status === 'Healthy' ? 'green' : 'red'}>
+                    <Badge
+                      color={plant.last_status === 'Healthy' ? 'green' : 'red'}
+                    >
                       {plant.last_status}
                     </Badge>
                   </Group>
-                  <Group justify="space-between">
-                    <Stack gap="sm">
-                      <Group align="center">
+                  <Group justify='space-between'>
+                    <Stack gap='sm'>
+                      <Group align='center'>
                         <IconDroplet color={'#4069bf'} />
                         <p>Moisture: {reading.soil_moisture ?? 'N/A'}</p>
                       </Group>
-                      <Group align="center">
+                      <Group align='center'>
                         <IconBucketDroplet color={'#2d3386'} />
                         <p>Last Water: {plant.last_water ?? 'Unknown'}</p>
                       </Group>
@@ -119,7 +138,7 @@ export default function PlantDashboard() {
                     {plant.last_status === 'Healthy' ? (
                       <IconPlant size={100} color={'#2d863e'} />
                     ) : (
-                      <IconPlantOff size={100} color="red" />
+                      <IconPlantOff size={100} color='red' />
                     )}
                   </Group>
                 </Card>
