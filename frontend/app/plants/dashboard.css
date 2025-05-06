@@ -1,5 +1,3 @@
-/*frontend\app\plants\dashboard.css*/
-
 /* frontend/app/plants/dashboard.css */
 /* styling for the plant dashboard page */
 
@@ -7,13 +5,13 @@
 
 /* custom theme colors and layout */
 :root {
-  --green-dark: #274e27;         /* primary text color */
-  --green-muted: #59765a;        /* inactive text color */
-  --green-light: #a5b49f;        /* accent color for light elements */
-  --cream: #f9f8f4;              /*background*/
-  --card-white: #ffffff;         /*card background color */
-  --border-radius: 16px;        
-  --box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05); /* soft shadow*/
+  --green-dark: #274e27;
+  --green-muted: #59765a;
+  --green-light: #a5b49f;
+  --cream: #f9f8f4;
+  --card-white: #ffffff;
+  --border-radius: 16px;
+  --box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
 }
 
 /* base layout and typography */
@@ -21,16 +19,9 @@ html, body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
-  font-family: 'EB Garamond', serif; 
-  color: var(--green-dark);          /*default text color */
-  background-color: var(--cream);   /*soft page background*/
-
-  /* background image with soft gradient blend */
-  background-image: './images/dashboard.png';
-  background-repeat: no-repeat;
-  background-position: bottom center;
-  background-size: cover;
-  background-attachment: fixed;
+  font-family: 'EB Garamond', serif;
+  color: var(--green-dark);
+  background-color: var(--cream);
 }
 
 /* soft white overlay to brighten background */
@@ -46,7 +37,14 @@ body::before {
 .page-layout {
   max-width: 1200px;
   margin: 0 auto;
-  padding-bottom: 5rem; /* leave space below the grid */
+  padding-bottom: 5rem;
+
+  /* background image for dashboard only */
+  background-image: url('/images/dashboard.png');
+  background-repeat: no-repeat;
+  background-position: bottom center;
+  background-size: cover;
+  background-attachment: fixed;
 }
 
 /* page heading */
@@ -58,7 +56,7 @@ body::before {
   color: var(--green-dark);
 }
 
-/* top action button group (add plant, refresh) */
+/* top action button group */
 .action-buttons {
   display: flex;
   justify-content: center;
@@ -77,22 +75,22 @@ body::before {
   transition: transform 0.2s ease-in-out;
 }
 
-/* hover zoom effect for buttons */
 .action-buttons button:hover {
   transform: scale(1.03);
 }
 
-/*grid layout for plant cards */
+/* plant card grid layout */
 .plant-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /*responsive columns */
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 2.5rem;
   padding: 0 2rem;
   max-width: 100%;
   box-sizing: border-box;
+  justify-content: center;
 }
 
-/* container for each individual plant card */
+/* plant card container */
 .plant-card {
   background-color: var(--card-white);
   border-radius: var(--border-radius);
@@ -107,12 +105,10 @@ body::before {
   color: inherit;
 }
 
-/* hover effect for plant card */
 .plant-card:hover {
   transform: scale(1.02);
 }
 
-/* plant name heading */
 .plant-name {
   font-size: 1.5rem;
   font-weight: bold;
@@ -121,12 +117,10 @@ body::before {
   text-decoration: none;
 }
 
-/* underline on hover to indicate it's clickable */
 .plant-name:hover {
   text-decoration: underline;
 }
 
-/* health status indicator badge */
 .status-badge {
   display: inline-block;
   font-size: 0.95rem;
@@ -137,17 +131,14 @@ body::before {
   color: white;
 }
 
-/*green badge for healthy plants */
 .status-badge.healthy {
   background-color: #2d863e;
 }
 
-/* red badge for unhealthy plants */
 .status-badge.unhealthy {
   background-color: #d13a3a;
 }
 
-/* block containing recent reading values */
 .reading-info {
   text-align: left;
   font-size: 1rem;
@@ -155,7 +146,6 @@ body::before {
   color: var(--green-muted);
 }
 
-/*paragraph styling for each sensor reading row */
 .reading-info p {
   margin: 0.4rem 0;
   display: flex;
@@ -163,13 +153,11 @@ body::before {
   gap: 0.4rem;
 }
 
-/* optional visual icon (e.g., water drop, sun) */
 .plant-icon {
   font-size: 3rem;
   margin-top: 1.5rem;
 }
 
-/* icon color based on health */
 .plant-icon.healthy {
   color: #2d863e;
 }
