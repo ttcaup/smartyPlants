@@ -110,7 +110,7 @@ export default function PlantPage() {
   const handleCheckStatus = async () => {
     setChecking(true);
     try {
-      const status = calculateStatus(mostRecentReading);
+      const status = calculatePlantStatus(mostRecentReading);
       await axios.put(`/api/plants/${plant}`, { last_status: status });
       notifications.show({
         title: 'Status Checked',
@@ -155,17 +155,57 @@ export default function PlantPage() {
       : latest;
   }, readings[0]);
 
-  //calculate plant status
-  //TODO: Update function for specific plants
-  function calculateStatus({ soil_moisture, temperature, humidity, light }) {
+  //calculate status for specific plants or general
+  function calculatePlantStatus({
+    plant_info,
+    soil_moisture,
+    temperature,
+    humidity,
+    light,
+  }) {
+    if (plant_info.plant_link === 'monstera') {
+      return calculateStatusForMonstera({
+        soil_moisture,
+        temperature,
+        humidity,
+        light,
+      });
+    }
+    return calculateStatusGeneral(soil_moisture, temperature, humidity, light);
+  }
+
+  //calculate generic plant status
+  function calculateStatusGeneral({
+    soil_moisture,
+    temperature,
+    humidity,
+    light,
+  }) {
     if (soil_moisture < 300) return 'Too much Water';
     if (soil_moisture > 650) return 'Needs Water';
     if (temperature > 90) return 'Too Hot';
     if (temperature < 40) return 'Too Cold';
     if (humidity < 30) return 'Too Dry';
     if (humidity > 60) return 'Too Humid';
-    if (light < 100) return 'Needs Light';
-    if (light > 400) return 'Too Bright';
+    if (light < 100) return 'Too Bright';
+    if (light > 600) return 'Needs Light';
+    return 'Healthy';
+  }
+  //calculate status for monstera plant
+  function calculateStatusForMonstera({
+    soil_moisture,
+    temperature,
+    humidity,
+    light,
+  }) {
+    if (soil_moisture < 300) return 'Too much Water';
+    if (soil_moisture > 500) return 'Needs Water';
+    if (temperature > 85) return 'Too Hot';
+    if (temperature < 65) return 'Too Cold';
+    if (humidity < 60) return 'Too Dry';
+    if (humidity > 70) return 'Too Humid';
+    if (light < 150) return 'Too Bright';
+    if (light > 350) return 'Needs Light';
     return 'Healthy';
   }
 
@@ -203,12 +243,12 @@ export default function PlantPage() {
                 <h3>Current Sensor Data</h3>
                 <Badge
                   color={
-                    calculateStatus(mostRecentReading) === 'Healthy'
+                    calculatePlantStatus(mostRecentReading) === 'Healthy'
                       ? 'green'
                       : 'red'
                   }
                 >
-                  {calculateStatus(mostRecentReading)}
+                  {calculatePlantStatus(mostRecentReading)}
                 </Badge>
               </Group>
               <Group>
