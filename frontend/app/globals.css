@@ -1,6 +1,8 @@
 /* Global Styles */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap'); /* Custom Font */
 
+.logo
+
 /* Light Mode Color Scheme */
 :root {
   --background: #f8eec2;  /* Background color for the page */
@@ -25,7 +27,7 @@ html, body {
 
 /* Body Background Image */
 body {
-  background: url('/images/homePlant.jpg') no-repeat center center fixed;  
+  /* background: url('/images/homePlant.jpg') no-repeat center center fixed;   */
   background-size: cover;
   padding-top: 20px; /* Adjust the body padding for consistency */
 }

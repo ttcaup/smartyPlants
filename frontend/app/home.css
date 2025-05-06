@@ -1,0 +1,122 @@
+/*home.css*/
+
+/* Imports the font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;700&display=swap');
+
+/* Top-level container for the entire homepage */
+.Home {
+  display: flex;             
+  height: 100vh;             
+  font-family: 'Cormorant Garamond', serif;  
+  background-color: #fffdf4;  
+}
+
+/* LEFT SECTION (Logo + Title + Subtitle) */
+.left-section {
+  flex: 2.5;                   /* takes up about 65% of horizontal space */
+  padding: 60px 50px;          /* adds 60px of space on top/bottom and 50px on left/right inside the box */
+  display: flex;               
+  flex-direction: column;     
+  justify-content: center;    
+}
+
+/* Row for logo and title side by side */
+.heading-row {
+  display: flex;              
+  align-items: center;        
+  gap: 15px;                   /*space between logo and text */
+  margin-bottom: 30px;         /*space below the heading block*/
+}
+
+/* Logo image styling */
+.logo {
+  height: 140px;               
+  width: auto;                 /* Preserve aspect ratio */
+  margin-top: 0;               
+}
+
+/* Container for "Growing" and "Happiness"*/
+.title-text {
+  display: flex;
+  flex-direction: column;      /*stacks the two title words vertically */
+  line-height: 0.9;            /*reduced space between them*/
+}
+
+/* "Growing" styling */
+.growing {
+  font-size: 80px;
+  font-style: italic;
+  font-weight: 500;
+  color: #274e27;              
+  margin: 0;
+}
+
+/* "Happiness" styling */
+.happiness {
+  font-size: 80px;
+  font-weight: 500;
+  color: #274e27;
+  margin: 0;
+}
+
+/* Subtitle */
+.subtitle {
+  margin-top: 20px;
+  font-size: 32px;
+  line-height: 1.6;           
+  max-width: 500px;
+  color: #274e27;
+}
+
+/* RIGHT SECTION (Image background + Button) */
+.right-section {
+  flex: 1.7;                   /* takes up 35% of the screen */
+  background: url('/images/homePlant.jpg') no-repeat center center;
+  background-size: cover;      /* Make the image cover the entire container */
+  background-position: center;
+  display: flex;               /* Center the button */
+  align-items: center;
+  justify-content: center;
+
+  border-left: 10px solid #274e27; /* Vertical green divider */
+  box-sizing: border-box;     /* Ensure padding/border don't break layout */
+}
+
+/* Remove underline and default link styles */
+.all-plants-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Styled button for "All Plants" */
+.all-plants-btn {
+  background-color: #fffdf4;   
+  color: #274e27;            
+  font-size: 45px;
+  font-weight: 500;
+  padding: 60px 80px;         
+  border: none;
+  border-radius: 27px;         /* rounded corners */
+  box-shadow: 10px 10px 0 #274e27;  /* hadow effect */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  line-height: 1.2;
+  cursor: pointer;
+
+  display: flex;               /* stack text and icon (center and vertically)) */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;     /* center content vertically */
+  gap: 12px;                   /* space between text and icon */
+  text-align: center;
+}
+
+/* Hover effect for button */
+.all-plants-btn:hover {
+  transform: translateY(-2px); /* Slight moves up on hover */
+  background-color: #feebd4;   /* Different hover color */
+}
+
+/* Styling for the click icon - Tabler*/
+.click-icon {
+  color: #274e27;
+}
