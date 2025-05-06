@@ -28,7 +28,7 @@ html, body {
   /* background image with soft gradient blend */
   background-image: 
     linear-gradient(to bottom, transparent 70%, rgba(0, 0, 0, 0.05)),
-    url('/dashboard.png');
+    url('/images/dashboard.png');
   background-repeat: no-repeat;
   background-position: bottom center;
   background-size: cover;
@@ -54,9 +54,9 @@ body::before {
 /* page heading */
 .page-title {
   text-align: center;
-  font-size: 3rem;
+  font-size: 5rem;
   font-weight: 600;
-  margin: 1rem 0 1.5rem;
+  margin: 0.5rem 0 0.5rem;
   color: var(--green-dark);
 }
 
