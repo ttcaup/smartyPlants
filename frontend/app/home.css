@@ -101,7 +101,7 @@
 /* Hover effect for button */
 .all-plants-btn:hover {
   transform: translateY(-2px); /* Slight moves up on hover */
-  background-color: #feebd4;   /* Different hover color */
+  background-color: #bce7c5;   /* Different hover color */
 }
 
 /* Styling for the click icon - Tabler*/
