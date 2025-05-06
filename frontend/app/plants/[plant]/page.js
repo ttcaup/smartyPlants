@@ -12,7 +12,7 @@ import {
   Stack,
   Loader,
   Button,
-  Center,
+  Center, 
   Tabs,
   Space,
   Card,

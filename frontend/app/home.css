@@ -20,49 +20,37 @@
   justify-content: center;    
 }
 
-/* Row for logo and title side by side */
-.heading-row {
-  display: flex;              
-  align-items: center;        
-  gap: 15px;                   /*space between logo and text */
-  margin-bottom: 30px;         /*space below the heading block*/
+/* italic styling */
+.italic {
+  font-style: italic;
 }
 
 /* Logo image styling */
 .logo {
   height: 140px;               
   width: auto;                 /* Preserve aspect ratio */
-  margin-top: 0;               
+  margin-bottom: 10px;               
 }
 
-/* Container for "Growing" and "Happiness"*/
+/* Container for "The smart way to plant.*/
 .title-text {
-  display: flex;
-  flex-direction: column;      /*stacks the two title words vertically */
   line-height: 0.9;            /*reduced space between them*/
+  margin-bottom: 20px;
 }
 
 /* "Growing" styling */
 .growing {
-  font-size: 80px;
-  font-style: italic;
+  font-size: 70px;
   font-weight: 500;
   color: #274e27;              
   margin: 0;
-}
-
-/* "Happiness" styling */
-.happiness {
-  font-size: 80px;
-  font-weight: 500;
-  color: #274e27;
-  margin: 0;
+  text-align: left;
 }
 
 /* Subtitle */
 .subtitle {
   margin-top: 20px;
-  font-size: 32px;
+  font-size: 40px;
   line-height: 1.6;           
   max-width: 500px;
   color: #274e27;

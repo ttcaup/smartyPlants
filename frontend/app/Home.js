@@ -15,13 +15,12 @@ export default function Home() {
     <div className="Home">
       {/* Left side: logo + title + subtitle */}
       <div className="left-section">
-        <div className="heading-row">
           <img src="./images/logo.png" alt="SmartyPlants Logo" className="logo" />
           <div className="title-text">
-            <h2 className="growing">Growing</h2>
-            <h2 className="happiness">Happiness</h2>
+            <h2 className="growing">
+              The <span className="italic">smart</span> way to plant.
+            </h2>
           </div>
-        </div>
         <p className="subtitle">
           Moisture, humidity, and light readings to take the best possible care of your plants.
         </p>
