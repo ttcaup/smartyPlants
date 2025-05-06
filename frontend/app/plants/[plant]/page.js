@@ -236,7 +236,7 @@ export default function PlantPage() {
     <PageLayout>
       <div className='plant'>
         <div className='plant-title'>
-          <Title order={2}>{plantName}</Title>
+          <h2>{plantName}</h2>
         </div>
         <SimpleGrid cols={2} verticalSpacing='xl'>
           {/* Sensor readings card */}

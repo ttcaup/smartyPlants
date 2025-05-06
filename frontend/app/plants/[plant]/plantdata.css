@@ -1,23 +1,43 @@
 /*frontend\app\plants\[plant]\plantdata.css*/
 /*styling for plant data page*/
 
+/* Import the Google Font */
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;700&display=swap');
 
-.plant {
+/* Reset and background styling */
+html, body {
+  margin: 0;
+  padding: 0;
+  background: none;
+  background-color: transparent;
   font-family: 'Cormorant Garamond', serif;
+}
+
+/* Plant page container */
+.plant {
+  min-height: 100vh;
   padding: 40px;
   background-image: url('/images/data.png');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
+  box-sizing: border-box;
 }
 
+/* Plant title styling */
 .plant-title {
   text-align: center;
   margin-bottom: 1.5rem;
 }
 
-/* Card styling for the sensor data */
+.plant-title h2 {
+  font-size: 52px;
+  font-weight: 700;
+  color: #274e27;
+  margin: 0;
+}
+
+/* Sensor data card */
 .sensor-card {
   background-color: rgba(255, 255, 255, 0.9);
   border-radius: 24px;
@@ -26,7 +46,7 @@
   color: #274e27;
 }
 
-/* Badge for plant health status */
+/* Health status badge */
 .status-badge {
   background-color: #e97451;
   color: white;
@@ -56,25 +76,31 @@
   color: #274e27;
 }
 
-/* Specific layout for stacking vertically */
-.action-buttons.vertical {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-/* Custom button colors */
-.button-green-light  { background-color: #d5e8d4; }
-.button-blue-light   { background-color: #dae8fc; }
-.button-orange-light { background-color: #f8cecc; }
-
-/* Hover effect */
+/* Fix consistent hover styling */
 .button-styled:hover {
   transform: translateY(-2px);
   box-shadow: 6px 6px 0 #274e27;
 }
 
-/* Charts section */
+/* Action button container stacked vertically */
+.action-buttons.vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Consistent light background colors */
+.button-green-light {
+  background-color: #d5e8d4;
+}
+.button-blue-light {
+  background-color: #dae8fc;
+}
+.button-orange-light {
+  background-color: #f8cecc;
+}
+
+/* Chart containers */
 .timeFilterGraphs {
   margin-top: 40px;
   background-color: rgba(255, 255, 255, 0.92);
