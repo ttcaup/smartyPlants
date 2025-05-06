@@ -3,19 +3,37 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;700&display=swap');
 
+html, body {
+  margin: 0;
+  padding: 0;
+  background: none;
+  background-color: transparent;
+}
+
 .plant {
+  min-height: 100vh;
   font-family: 'Cormorant Garamond', serif;
+  margin: 0;
   padding: 40px;
   background-image: url('/images/data.png');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
+  box-sizing: border-box;
 }
 
 .plant-title {
   text-align: center;
   margin-bottom: 1.5rem;
 }
+
+.plant-title h2 {
+  font-size: 48px; /* adjust as needed */
+  font-weight: 700;
+  color: #274e27;
+  margin: 0;
+}
+
 
 /* Card styling for the sensor data */
 .sensor-card {
