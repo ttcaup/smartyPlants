@@ -12,21 +12,24 @@ import {
   Group,
   Text,
 } from '@mantine/core';
+import { DateInput } from '@mantine/dates';
+
 import { React, useState, useEffect } from 'react';
 import axios from 'axios';
+import { setHours, setMinutes, setSeconds } from 'date-fns';
 
 export default function PlantAction({
-  actionMode,         // current mode: 'add', 'edit', or 'delete'
-  setActionMode,      // function to update action mode
-  selectedPlant,      // the plant currently selected for editing/deleting
-  setSelectedPlant,   // function to update selected plant
-  refreshPlants,      // function to refresh plant list after update
+  actionMode, // current mode: 'add', 'edit', or 'delete'
+  setActionMode, // function to update action mode
+  selectedPlant, // the plant currently selected for editing/deleting
+  setSelectedPlant, // function to update selected plant
+  refreshPlants, // function to refresh plant list after update
 }) {
   // form field state variables
   const [name, setName] = useState('');
   const [link, setLink] = useState('');
   const [status, setStatus] = useState('');
-  const [lastWater, setLastWater] = useState('');
+  const [lastWatered, setLastWatered] = useState('');
 
   // populate form fields when entering edit mode, or clear fields otherwise
   useEffect(() => {
@@ -34,12 +37,12 @@ export default function PlantAction({
       setName(selectedPlant.name);
       setLink(selectedPlant.plant_link);
       setStatus(selectedPlant.last_status);
-      setLastWater(selectedPlant.last_water);
+      setLastWatered(selectedPlant.last_water);
     } else {
       setName('');
       setLink('');
       setStatus('');
-      setLastWater('');
+      setLastWatered('');
     }
   }, [actionMode, selectedPlant]);
 
@@ -48,7 +51,7 @@ export default function PlantAction({
     setName('');
     setLink('');
     setStatus('');
-    setLastWater('');
+    setLastWatered('');
     setSelectedPlant(null);
     setActionMode(null);
   };
@@ -59,7 +62,7 @@ export default function PlantAction({
       name,
       plant_link: link,
       last_status: status,
-      last_water: lastWater,
+      last_water: convertDateToBSONFormatting(lastWatered),
     });
     refreshPlants();
     reset();
@@ -71,7 +74,7 @@ export default function PlantAction({
       name,
       plant_link: link,
       last_status: status,
-      last_water: lastWater,
+      last_watered: convertDateToBSONFormatting(lastWatered),
     });
     refreshPlants();
     reset();
@@ -84,26 +87,60 @@ export default function PlantAction({
     reset();
   };
 
+  const convertDateToBSONFormatting = (date) => {
+    if (!date) return '';
+    const now = new Date();
+    const withTime = setHours(
+      setMinutes(setSeconds(date, now.getSeconds()), now.getMinutes()),
+      now.getHours()
+    );
+    return withTime;
+  };
+
   return (
     <>
       {/* Add Plant Modal */}
-      <Modal opened={actionMode === 'add'} onClose={reset} title="Add Plant">
+      <Modal opened={actionMode === 'add'} onClose={reset} title='Add Plant'>
         <Stack>
-          <TextInput label="Name" value={name} onChange={(e) => setName(e.target.value)} />
-          <TextInput label="Link" value={link} onChange={(e) => setLink(e.target.value)} />
+          <TextInput
+            label='Name'
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <TextInput
+            label='Link'
+            value={link}
+            onChange={(e) => setLink(e.target.value)}
+          />
           <Select
-            label="Status"
-            data={['Healthy', 'Needs Water', 'Too Bright']}
+            label='Status'
+            data={[
+              'Healthy',
+              'Needs Water',
+              'Too Bright',
+              'Needs Light',
+              'Too much Water',
+              'Too Hot',
+              'Too Cold',
+              'Too Dry',
+              'Too Humid',
+            ]}
             value={status}
             onChange={setStatus}
           />
-          <TextInput
-            label="Last Watered"
-            value={lastWater}
-            onChange={(e) => setLastWater(e.target.value)}
+          <DateInput
+            clearable
+            valueFormat='MMM DD YYYY'
+            defaultValue={new Date()}
+            label='Last Watered'
+            placeholder='Pick date'
+            value={lastWatered}
+            onChange={setLastWatered}
           />
-          <Group justify="flex-end">
-            <Button variant="default" onClick={reset}>Cancel</Button>
+          <Group justify='flex-end'>
+            <Button variant='default' onClick={reset}>
+              Cancel
+            </Button>
             <Button onClick={handleAdd}>Add</Button>
           </Group>
         </Stack>
@@ -113,24 +150,43 @@ export default function PlantAction({
       <Modal
         opened={actionMode === 'edit' && selectedPlant}
         onClose={reset}
-        title="Edit Plant"
+        title='Edit Plant'
       >
         <Stack>
-          <TextInput label="Name" value={name} onChange={(e) => setName(e.target.value)} />
-          <TextInput label="Link" value={link} onChange={(e) => setLink(e.target.value)} />
+          <TextInput
+            label='Name'
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
           <Select
-            label="Status"
-            data={['Healthy', 'Needs Water', 'Too Bright']}
+            label='Status'
+            data={[
+              'Healthy',
+              'Needs Water',
+              'Too Bright',
+              'Needs Light',
+              'Too much Water',
+              'Too Hot',
+              'Too Cold',
+              'Too Dry',
+              'Too Humid',
+            ]}
             value={status}
             onChange={setStatus}
           />
-          <TextInput
-            label="Last Watered"
-            value={lastWater}
-            onChange={(e) => setLastWater(e.target.value)}
+          <DateInput
+            clearable
+            valueFormat='MMM DD YYYY'
+            defaultValue={new Date()}
+            label='Last Watered'
+            placeholder='Pick date'
+            value={lastWatered}
+            onChange={setLastWatered}
           />
-          <Group justify="flex-end">
-            <Button variant="default" onClick={reset}>Cancel</Button>
+          <Group justify='flex-end'>
+            <Button variant='default' onClick={reset}>
+              Cancel
+            </Button>
             <Button onClick={handleEdit}>Update</Button>
           </Group>
         </Stack>
@@ -140,12 +196,16 @@ export default function PlantAction({
       <Modal
         opened={actionMode === 'delete' && selectedPlant}
         onClose={reset}
-        title="Confirm Deletion"
+        title='Confirm Deletion'
       >
-        <Text mb="md">Delete plant "{selectedPlant?.name}"?</Text>
-        <Group justify="flex-end">
-          <Button variant="default" onClick={reset}>Cancel</Button>
-          <Button color="red" onClick={handleDelete}>Delete</Button>
+        <Text mb='md'>Delete plant "{selectedPlant?.name}"?</Text>
+        <Group justify='flex-end'>
+          <Button variant='default' onClick={reset}>
+            Cancel
+          </Button>
+          <Button color='red' onClick={handleDelete}>
+            Delete
+          </Button>
         </Group>
       </Modal>
     </>
