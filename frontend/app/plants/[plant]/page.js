@@ -59,7 +59,7 @@ export default function PlantPage() {
       .finally(() => setLoading(false));
   }, [plant]);
 
-  // Reload readings and update last_water if watered
+  // Reload readings and update last_watered if watered
   const handleReloadData = async () => {
     setReloading(true);
     try {
@@ -73,7 +73,7 @@ export default function PlantPage() {
       const latestWatered = res.data.find((r) => r.watered === true);
       if (latestWatered) {
         await axios.put(`/api/plants/${plant}`, {
-          last_water: new Date(latestWatered.timestamp).toISOString(),
+          last_watered: new Date(latestWatered.timestamp).toISOString(),
         });
       }
     } catch {
@@ -90,10 +90,10 @@ export default function PlantPage() {
   // Manually set the plant's last_water to "Today"
   const handleWaterPlant = async () => {
     try {
-      await axios.put(`/api/plants/${plant}`, { last_water: 'Today' });
+      await axios.put(`/api/plants/${plant}`, { last_watered: new Date() });
       notifications.show({
         title: 'Plant Watered',
-        message: 'Last_water updated!',
+        message: 'Last_watered updated!',
       });
 
       const updated = await axios.get(`/api/plants/${plant}`);
@@ -277,7 +277,7 @@ export default function PlantPage() {
                   Last Watered:{' '}
                   {mostRecentReading?.watered
                     ? new Date(mostRecentReading.timestamp).toLocaleString()
-                    : plantData.last_water}
+                    : new Date(plantData.last_watered).toLocaleString()}
                 </p>
               </Group>
               <Text size='sm' c='dimmed' mb='xs'>
@@ -287,23 +287,34 @@ export default function PlantPage() {
           </Card>
 
           {/* Action buttons */}
-          <Card padding="lg" radius="lg" withBorder>
-  <div className="action-buttons vertical">
-    <Button className="button-styled button-blue-light" onClick={handleReloadData}>
-      Reload Data
-    </Button>
-    <Button className="button-styled button-green-light" onClick={handleWaterPlant}>
-      Water Plant
-    </Button>
-    <Button className="button-styled button-green-light" onClick={handleCheckStatus}>
-      Check Status
-    </Button>
-    <Button className="button-styled button-orange-light" onClick={handleDeletePlant}>
-      Delete Plant
-    </Button>
-  </div>
-</Card>
-
+          <Card padding='lg' radius='lg' withBorder>
+            <div className='action-buttons vertical'>
+              <Button
+                className='button-styled button-blue-light'
+                onClick={handleReloadData}
+              >
+                Reload Data
+              </Button>
+              <Button
+                className='button-styled button-green-light'
+                onClick={handleWaterPlant}
+              >
+                Water Plant
+              </Button>
+              <Button
+                className='button-styled button-green-light'
+                onClick={handleCheckStatus}
+              >
+                Check Status
+              </Button>
+              <Button
+                className='button-styled button-orange-light'
+                onClick={handleDeletePlant}
+              >
+                Delete Plant
+              </Button>
+            </div>
+          </Card>
 
           {/* Time-filtered charts section */}
           <div className='timeFilterGraphs chart-fullwidth'>

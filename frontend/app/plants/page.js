@@ -7,6 +7,7 @@ import axios from 'axios';
 import Link from 'next/link';
 import PlantAction from '@/components/PlantActions';
 import PageLayout from '@/components/PageLayout';
+import { format } from 'date-fns';
 
 import { Button, Loader, Center } from '@mantine/core';
 import {
@@ -19,9 +20,9 @@ import {
 import './dashboard.css'; //styles for plant dashboard
 
 export default function PlantDashboard() {
-  const [plants, setPlants] = useState([]);           //plant objects
-  const [readings, setReadings] = useState([]);       //sensor readings
-  const [loading, setLoading] = useState(true);       //state
+  const [plants, setPlants] = useState([]); //plant objects
+  const [readings, setReadings] = useState([]); //sensor readings
+  const [loading, setLoading] = useState(true); //state
   const [actionMode, setActionMode] = useState(null); // current mode: add/edit/delete
   const [selectedPlant, setSelectedPlant] = useState(null); //selected plant(for editing/deleting)
 
@@ -65,7 +66,7 @@ export default function PlantDashboard() {
     return (
       <PageLayout>
         <Center style={{ minHeight: '50vh' }}>
-          <Loader color="green" />
+          <Loader color='green' />
         </Center>
       </PageLayout>
     );
@@ -75,41 +76,57 @@ export default function PlantDashboard() {
   return (
     <PageLayout>
       {/* heading */}
-      <h2 className="page-title">Plants</h2>
+      <h2 className='page-title'>Plants</h2>
 
       {/* action buttons */}
-      <div className="action-buttons">
-        <Button variant="outline" onClick={() => setActionMode('add')}>
+      <div className='action-buttons'>
+        <Button
+          color=' #f9f8f4'
+          variant='outline'
+          onClick={() => setActionMode('add')}
+        >
           Add
         </Button>
-        <Button variant="outline" onClick={() => setActionMode('edit')}>
+        <Button
+          color=' #f9f8f4'
+          variant='outline'
+          onClick={() => setActionMode('edit')}
+        >
           Edit
         </Button>
-        <Button color="red" variant="outline" onClick={() => setActionMode('delete')}>
+        <Button
+          color=' #f9f8f4'
+          variant='outline'
+          onClick={() => setActionMode('delete')}
+        >
           Delete
         </Button>
 
         {/* cancel button appears when in an action mode */}
         {actionMode && (
-          <Button variant="subtle" color="gray" onClick={() => setActionMode(null)}>
+          <Button
+            variant='subtle'
+            color='gray'
+            onClick={() => setActionMode(null)}
+          >
             Cancel {actionMode.charAt(0).toUpperCase() + actionMode.slice(1)}
           </Button>
         )}
       </div>
 
       {/* plant card grid */}
-      <div className="plant-grid">
+      <div className='plant-grid'>
         {plants.map((plant) => {
           const reading = getReading(plant.plant_link); // gets latest reading
           return (
             <Link
               href={`plants/${plant.plant_link}`}
-              className="plant-card"
+              className='plant-card'
               key={plant.plant_link}
               onClick={(e) => handleCardClick(e, plant)} // intercept if in edit/delete mode
             >
               {/* plant name */}
-              <div className="plant-name">{plant.name}</div>
+              <div className='plant-name'>{plant.name}</div>
 
               {/* status badge */}
               <span
@@ -121,14 +138,15 @@ export default function PlantDashboard() {
               </span>
 
               {/* sensor summary info */}
-              <div className="reading-info">
+              <div className='reading-info'>
                 <p>
                   <IconDroplet size={16} style={{ marginRight: 6 }} />
                   Moisture: {reading.soil_moisture ?? 'N/A'}
                 </p>
                 <p>
                   <IconBucketDroplet size={16} style={{ marginRight: 6 }} />
-                  Last Water: {plant.last_water ?? 'Unknown'}
+                  Last Watered:{' '}
+                  {format(plant.last_watered, 'MMM dd yyyy') || 'Unknown'}
                 </p>
               </div>
 

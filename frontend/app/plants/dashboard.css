@@ -26,7 +26,7 @@ html, body {
   background-color: var(--cream);   /*soft page background*/
 
   /* background image with soft gradient blend */
-  background-image: './images/dashboard.png';
+  background-image: url('/images/dashboard.png');
   background-repeat: no-repeat;
   background-position: bottom center;
   background-size: cover;
@@ -55,7 +55,7 @@ body::before {
   font-size: 5rem;
   font-weight: 600;
   margin: 0.5rem 0 0.5rem;
-  color: var(--green-dark);
+  color: var(--cream);
 }
 
 /* top action button group (add plant, refresh) */
