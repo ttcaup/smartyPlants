@@ -223,13 +223,22 @@ export default function PlantPage() {
 
           {/* Action buttons */}
           <Card padding="lg" radius="lg" withBorder>
-            <SimpleGrid col={2}>
-              <Button onClick={handleReloadData} className="button-styled button-purple">Reload Data</Button>
-              <Button onClick={handleWaterPlant} className="button-styled button-blue">Water Plant</Button>
-              <Button onClick={handleCheckStatus} className="button-styled button-green">Check Status</Button>
-              <Button onClick={handleDeletePlant} className="button-styled button-red">Delete Plant</Button>
-            </SimpleGrid>
-          </Card>
+  <div className="action-buttons vertical">
+    <Button className="button-styled button-blue-light" onClick={handleReloadData}>
+      Reload Data
+    </Button>
+    <Button className="button-styled button-green-light" onClick={handleWaterPlant}>
+      Water Plant
+    </Button>
+    <Button className="button-styled button-green-light" onClick={handleCheckStatus}>
+      Check Status
+    </Button>
+    <Button className="button-styled button-orange-light" onClick={handleDeletePlant}>
+      Delete Plant
+    </Button>
+  </div>
+</Card>
+
 
           {/* Time-filtered charts section */}
           <div className="timeFilterGraphs chart-fullwidth">

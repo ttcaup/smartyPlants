@@ -3,86 +3,78 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;700&display=swap');
 
-
-/* Main container for the plant detail page */
 .plant {
-  font-family: 'Cormorant Garamond', serif;             
-  padding: 40px;                            /*inner spacing*/
-  background-image: none; 
+  font-family: 'Cormorant Garamond', serif;
+  padding: 40px;
+  background-image: url('/images/data.png');
   background-size: cover;
   background-repeat: no-repeat;
-  background-position: bottom center;
+  background-position: center;
 }
+
 .plant-title {
   text-align: center;
   margin-bottom: 1.5rem;
 }
 
-/* Specific styling for right-side action buttons */
-.action-buttons .button-styled {
-  width: 100%;
-  border-radius: 20px;
-  font-size: 22px;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  padding: 14px;
-  box-shadow: 4px 4px 0 #274e27;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.action-buttons .button-styled:hover {
-  transform: translateY(-2px);
-  box-shadow: 6px 6px 0 #274e27;
-}
-
-/* Optional custom button shades to match the mockup */
-.button-green-light  { background-color: #d5e8d4; color: #274e27; }
-.button-blue-light   { background-color: #dae8fc; color: #274e27; }
-.button-orange-light { background-color: #f8cecc; color: #274e27; }
-
 /* Card styling for the sensor data */
 .sensor-card {
-  background-color: rgba(255, 255, 255, 0.9); /*semitransparent white*/
-  border-radius: 24px;                       
-  padding: 24px;                             
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);  
-  color: #274e27;                           
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  color: #274e27;
 }
 
-/* Badge for showing the plant's status */
+/* Badge for plant health status */
 .status-badge {
-  background-color: #e97451; 
+  background-color: #e97451;
   color: white;
-  border-radius: 30px;        /* Pill shape */
+  border-radius: 30px;
   padding: 6px 14px;
   font-weight: bold;
   font-size: 14px;
 }
 
-/* General button styling shared across all actions */
+/* General button styling */
 .button-styled {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 22px;
-  font-weight: 500;
-  border-radius: 16px;
-  padding: 12px;
-  box-shadow: 4px 4px 0 #274e27;        
-  transition: all 0.2s ease-in-out;      /*hover effects*/
+  font-family: 'Georgia', serif;
+  font-size: 20px;
+  font-weight: 600;
+  border-radius: 20px;
+  padding: 16px 24px;
+  line-height: 1.6;
+  box-shadow: 4px 4px 0 #274e27;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  color: #274e27;
 }
 
-/* Themed button color classes */
-.button-purple { background-color: #8468a2; color: white; }
-.button-blue   { background-color: #79a9f0; color: white; }
-.button-green  { background-color: #97d98c; color: #274e27; }
-.button-red    { background-color: #f7b199; color: #274e27; }
+/* Specific layout for stacking vertically */
+.action-buttons.vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
 
-/* Hover effect for buttons */
+/* Custom button colors */
+.button-green-light  { background-color: #d5e8d4; }
+.button-blue-light   { background-color: #dae8fc; }
+.button-orange-light { background-color: #f8cecc; }
+
+/* Hover effect */
 .button-styled:hover {
-  transform: translateY(-2px);           /*slight lift on hover */
-  box-shadow: 6px 6px 0 #274e27;         /*stronger shadow */
+  transform: translateY(-2px);
+  box-shadow: 6px 6px 0 #274e27;
 }
 
-/* Wrapper for time-filtered chart tabs (Day, Week, Month) */
+/* Charts section */
 .timeFilterGraphs {
   margin-top: 40px;
   background-color: rgba(255, 255, 255, 0.92);
@@ -91,7 +83,6 @@
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.07);
 }
 
-/* Container for chart + vertical tabs (ChartTabs.js) */
 .sensorGraphs {
   margin-top: 2rem;
   background-color: rgba(255, 255, 255, 0.85);
@@ -101,17 +92,15 @@
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.07);
 }
 
-/* Make chart section span full width */
 .chart-fullwidth {
-  grid-column: 1 / -1; /* Spans all columns in the grid */
-}
-/* Layout for vertical tabs + chart side-by-side */
-.chart-tabs {
-  display: flex;
-  gap: 2rem; /* Space between tab list and chart */
+  grid-column: 1 / -1;
 }
 
-/* Styling for vertical tab list area */
+.chart-tabs {
+  display: flex;
+  gap: 2rem;
+}
+
 .chart-tab-list {
   background-color: #f1f3f0;
   padding: 1rem;
