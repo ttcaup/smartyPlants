@@ -1,0 +1,181 @@
+/*frontend\app\plants\dashboard.css*/
+
+/* frontend/app/plants/dashboard.css */
+/* styling for the plant dashboard page */
+
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond&display=swap');
+
+/* custom theme colors and layout */
+:root {
+  --green-dark: #274e27;         /* primary text color */
+  --green-muted: #59765a;        /* inactive text color */
+  --green-light: #a5b49f;        /* accent color for light elements */
+  --cream: #f9f8f4;              /*background*/
+  --card-white: #ffffff;         /*card background color */
+  --border-radius: 16px;        
+  --box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05); /* soft shadow*/
+}
+
+/* base layout and typography */
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  font-family: 'EB Garamond', serif; 
+  color: var(--green-dark);          /*default text color */
+  background-color: var(--cream);   /*soft page background*/
+
+  /* background image with soft gradient blend */
+  background-image: 
+    linear-gradient(to bottom, transparent 70%, rgba(0, 0, 0, 0.05)),
+    url('/dashboard.png');
+  background-repeat: no-repeat;
+  background-position: bottom center;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+/* soft white overlay to brighten background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.85);
+  z-index: -1;
+}
+
+/* main page container */
+.page-layout {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-bottom: 5rem; /* leave space below the grid */
+}
+
+/* page heading */
+.page-title {
+  text-align: center;
+  font-size: 3rem;
+  font-weight: 600;
+  margin: 1rem 0 1.5rem;
+  color: var(--green-dark);
+}
+
+/* top action button group (add plant, refresh) */
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1.2rem;
+  margin-bottom: 3rem;
+}
+
+/* individual action button styling */
+.action-buttons button {
+  font-family: 'EB Garamond', serif !important;
+  font-size: 1.15rem;
+  font-weight: 500;
+  border-radius: 30px !important;
+  padding: 0.5rem 2rem !important;
+  box-shadow: 0 4px 8px rgba(39, 78, 39, 0.2);
+  transition: transform 0.2s ease-in-out;
+}
+
+/* hover zoom effect for buttons */
+.action-buttons button:hover {
+  transform: scale(1.03);
+}
+
+/*grid layout for plant cards */
+.plant-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /*responsive columns */
+  gap: 2.5rem;
+  padding: 0 2rem;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* container for each individual plant card */
+.plant-card {
+  background-color: var(--card-white);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  width: 100%;
+  max-width: 300px;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  transition: transform 0.2s ease-in-out;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* hover effect for plant card */
+.plant-card:hover {
+  transform: scale(1.02);
+}
+
+/* plant name heading */
+.plant-name {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: var(--green-dark);
+  text-decoration: none;
+}
+
+/* underline on hover to indicate it's clickable */
+.plant-name:hover {
+  text-decoration: underline;
+}
+
+/* health status indicator badge */
+.status-badge {
+  display: inline-block;
+  font-size: 0.95rem;
+  font-weight: bold;
+  padding: 0.4rem 0.9rem;
+  border-radius: 12px;
+  margin: 0.5rem 0;
+  color: white;
+}
+
+/*green badge for healthy plants */
+.status-badge.healthy {
+  background-color: #2d863e;
+}
+
+/* red badge for unhealthy plants */
+.status-badge.unhealthy {
+  background-color: #d13a3a;
+}
+
+/* block containing recent reading values */
+.reading-info {
+  text-align: left;
+  font-size: 1rem;
+  margin-top: 1rem;
+  color: var(--green-muted);
+}
+
+/*paragraph styling for each sensor reading row */
+.reading-info p {
+  margin: 0.4rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* optional visual icon (e.g., water drop, sun) */
+.plant-icon {
+  font-size: 3rem;
+  margin-top: 1.5rem;
+}
+
+/* icon color based on health */
+.plant-icon.healthy {
+  color: #2d863e;
+}
+
+.plant-icon.danger {
+  color: #d13a3a;
+}

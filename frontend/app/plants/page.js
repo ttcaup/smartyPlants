@@ -1,154 +1,155 @@
-/*frontend\app\plants\page.js*/
-/*manages dashboard for all plants*/
+/* frontend/app/plants/page.js */
+/* manages dashboard for all plants */
 'use client';
+
 import { React, useEffect, useState } from 'react';
+import axios from 'axios';
+import Link from 'next/link';
+import PlantAction from '@/components/PlantActions';
 import PageLayout from '@/components/PageLayout';
-import {
-  Grid,
-  Card,
-  Text,
-  Badge,
-  Group,
-  Title,
-  Stack,
-  Button,
-  Center,
-  Loader,
-} from '@mantine/core';
+
+import { Button, Loader, Center } from '@mantine/core';
 import {
   IconDroplet,
   IconBucketDroplet,
   IconPlant,
   IconPlantOff,
 } from '@tabler/icons-react';
-import Link from 'next/link';
-import axios from 'axios';
-import PlantAction from '@/components/PlantActions';
+
+import './dashboard.css'; //styles for plant dashboard
 
 export default function PlantDashboard() {
-  const [plants, setPlants] = useState([]);
-  const [readings, setReadings] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [actionMode, setActionMode] = useState(null); // actions is either 'add', 'edit', 'delete', or null
-  const [selectedPlant, setSelectedPlant] = useState(null);
+  const [plants, setPlants] = useState([]);           //plant objects
+  const [readings, setReadings] = useState([]);       //sensor readings
+  const [loading, setLoading] = useState(true);       //state
+  const [actionMode, setActionMode] = useState(null); // current mode: add/edit/delete
+  const [selectedPlant, setSelectedPlant] = useState(null); //selected plant(for editing/deleting)
 
-  //get data through API endpoints
+  // fetch plant + reading data on mount
   useEffect(() => {
-    axios.get('/api/plants').then((res) => setPlants(res.data));
-    axios.get('/api/readings').then((res) => setReadings(res.data));
-    setLoading(false);
+    const fetchData = async () => {
+      const plantsRes = await axios.get('/api/plants');
+      const readingsRes = await axios.get('/api/readings');
+      setPlants(plantsRes.data);
+      setReadings(readingsRes.data);
+      setLoading(false);
+    };
+
+    fetchData();
+    window.scrollTo(0, 0); //scrolls to top on page load
   }, []);
 
-  //callback handlers for CRUD action buttons
+  // find the latest reading associated with the plant by _id
   const getReading = (plant_link) => {
     const found = readings.find((r) => r._id === plant_link);
     return found?.latestReading || {};
   };
+
+  // refresh plant data only (after add/edit/delete)
   const refreshPlants = async () => {
     const res = await axios.get('/api/plants');
     setPlants(res.data);
   };
+
+  // intercept card click if in edit or delete mode
   const handleCardClick = (e, plant) => {
     if (actionMode === 'edit' || actionMode === 'delete') {
-      e.preventDefault(); //Stop <Link> navigation to allow for other clicking
-      setSelectedPlant(plant);
-      setActionMode(actionMode);
+      e.preventDefault(); // prevent navigation
+      setSelectedPlant(plant); // select plant for action
+      setActionMode(actionMode); // ensure mode is still active
     }
   };
 
-  //if loading or no plant data or no reading data received, showing loading overlay
-  if (loading || !plants.length || !readings.length) {
+  // loading screen while fetching data
+  if (loading || plants.length === 0 || readings.length === 0) {
     return (
       <PageLayout>
-        <Center>
-          <Loader />
+        <Center style={{ minHeight: '50vh' }}>
+          <Loader color="green" />
         </Center>
       </PageLayout>
     );
   }
 
+  // render dashboard once data is loaded
   return (
     <PageLayout>
-      {/* Centered "Plants" Title */}
-      <Group position='center' direction='column' mb='lg'>
-        <Title order={2}>Plants</Title>
+      {/* heading */}
+      <h2 className="page-title">Plants</h2>
 
-        {/* Actions (Add, Edit, Delete buttons) centered below the title */}
-        <Group position='center' direction='row' mb='md'>
-          <Button onClick={() => setActionMode('add')}>Add Plant</Button>
-          <Button onClick={() => setActionMode('edit')}>Edit Plant</Button>
-          <Button color='red' onClick={() => setActionMode('delete')}>
-            Delete Plant
+      {/* action buttons */}
+      <div className="action-buttons">
+        <Button variant="outline" onClick={() => setActionMode('add')}>
+          Add
+        </Button>
+        <Button variant="outline" onClick={() => setActionMode('edit')}>
+          Edit
+        </Button>
+        <Button color="red" variant="outline" onClick={() => setActionMode('delete')}>
+          Delete
+        </Button>
+
+        {/* cancel button appears when in an action mode */}
+        {actionMode && (
+          <Button variant="subtle" color="gray" onClick={() => setActionMode(null)}>
+            Cancel {actionMode.charAt(0).toUpperCase() + actionMode.slice(1)}
           </Button>
-          {actionMode && (
-            <Button
-              variant='light'
-              color='gray'
-              onClick={() => setActionMode(null)}
-            >
-              Cancel {actionMode.charAt(0).toUpperCase() + actionMode.slice(1)}
-            </Button>
-          )}
-        </Group>
-      </Group>
+        )}
+      </div>
 
-      {/* Plant Grid: Displaying plants in rows of 3 */}
-      <Grid grow mb='lg' gutter='md'>
+      {/* plant card grid */}
+      <div className="plant-grid">
         {plants.map((plant) => {
-          const reading = getReading(plant.plant_link);
-          const cardClickable =
-            actionMode === 'edit' || actionMode === 'delete';
+          const reading = getReading(plant.plant_link); // gets latest reading
           return (
-            <Grid.Col key={plant._id} span={4}>
-              <Link
-                href={`plants/${plant.plant_link}`}
-                style={{ textDecoration: 'none' }}
-                onClick={(e) => handleCardClick(e, plant)}
+            <Link
+              href={`plants/${plant.plant_link}`}
+              className="plant-card"
+              key={plant.plant_link}
+              onClick={(e) => handleCardClick(e, plant)} // intercept if in edit/delete mode
+            >
+              {/* plant name */}
+              <div className="plant-name">{plant.name}</div>
+
+              {/* status badge */}
+              <span
+                className={`status-badge ${
+                  plant.last_status === 'Healthy' ? 'healthy' : 'unhealthy'
+                }`}
               >
-                <Card
-                  shadow='sm'
-                  padding='lg'
-                  radius='md'
-                  withBorder
-                  style={
-                    cardClickable
-                      ? { cursor: 'pointer', border: '2px solid #228be6' }
-                      : {}
-                  }
-                >
-                  <Group justify='space-between'>
-                    <Text fw={500}>{plant.name}</Text>
-                    <Badge
-                      color={plant.last_status === 'Healthy' ? 'green' : 'red'}
-                    >
-                      {plant.last_status}
-                    </Badge>
-                  </Group>
-                  <Group justify='space-between'>
-                    <Stack gap='sm'>
-                      <Group align='center'>
-                        <IconDroplet color={'#4069bf'} />
-                        <p>Moisture: {reading.soil_moisture ?? 'N/A'}</p>
-                      </Group>
-                      <Group align='center'>
-                        <IconBucketDroplet color={'#2d3386'} />
-                        <p>Last Water: {plant.last_water ?? 'Unknown'}</p>
-                      </Group>
-                    </Stack>
-                    {plant.last_status === 'Healthy' ? (
-                      <IconPlant size={100} color={'#2d863e'} />
-                    ) : (
-                      <IconPlantOff size={100} color='red' />
-                    )}
-                  </Group>
-                </Card>
-              </Link>
-            </Grid.Col>
+                {plant.last_status}
+              </span>
+
+              {/* sensor summary info */}
+              <div className="reading-info">
+                <p>
+                  <IconDroplet size={16} style={{ marginRight: 6 }} />
+                  Moisture: {reading.soil_moisture ?? 'N/A'}
+                </p>
+                <p>
+                  <IconBucketDroplet size={16} style={{ marginRight: 6 }} />
+                  Last Water: {plant.last_water ?? 'Unknown'}
+                </p>
+              </div>
+
+              {/* bottom icon is based on health (so healthy or not helthy) */}
+              <div
+                className={`plant-icon ${
+                  plant.last_status === 'Healthy' ? 'healthy' : 'danger'
+                }`}
+              >
+                {plant.last_status === 'Healthy' ? (
+                  <IconPlant size={64} />
+                ) : (
+                  <IconPlantOff size={64} />
+                )}
+              </div>
+            </Link>
           );
         })}
-      </Grid>
+      </div>
 
-      {/* PlantAction Modals */}
+      {/* action modal (add/edit/delete logic) */}
       <PlantAction
         actionMode={actionMode}
         setActionMode={setActionMode}

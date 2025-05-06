@@ -1,5 +1,7 @@
 /*Individual Plant Page to display plant details and offer actions*/
+
 'use client';
+
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import {
@@ -31,132 +33,91 @@ import {
 } from '@tabler/icons-react';
 import axios from 'axios';
 import ChartTabs from '@/components/ChartTabs';
+import './plantdata.css'; // custom styling for this plant page
 
 export default function PlantPage() {
-  const { plant } = useParams();
-  const router = useRouter();
-  const [readings, setReadings] = useState([]);
-  const [plantData, setPlantData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  //may remove later or properly implement
-  const [reloading, setReloading] = useState(false);
-  const [checking, setChecking] = useState(false);
+  const { plant } = useParams();           // gets plant name from URL
+  const router = useRouter();              // for redirection
+  const [readings, setReadings] = useState([]);      
+  const [plantData, setPlantData] = useState([]);    
+  const [loading, setLoading] = useState(true);      // Loading screen toggle
+  const [reloading, setReloading] = useState(false); // Reload button toggle
+  const [checking, setChecking] = useState(false);   // Check Status button toggle
 
-  //get data from database by calling API endpoints
+  // Fetch plant and reading data from API on mount
   useEffect(() => {
-    axios
-      .get(`/api/readings/${plant}`)
-      .then((res) => setReadings(res.data))
-      .catch((err) => console.error(err));
-
-    axios
-      .get(`/api/plants/${plant}`)
-      .then((res) => setPlantData(res.data))
-      .catch((err) => console.log(err))
-      .finally(() => setLoading(false));
+    axios.get(`/api/readings/${plant}`).then((res) => setReadings(res.data)).catch(console.error);
+    axios.get(`/api/plants/${plant}`).then((res) => setPlantData(res.data)).catch(console.error).finally(() => setLoading(false));
   }, [plant]);
 
-  //callback handlers for action buttons
-  //TODO: fix lack of notification display (not displayed because the notifications.show is outside the return and thus does not render)
+  // Reload readings and update last_water if watered
   const handleReloadData = async () => {
     setReloading(true);
-    let res;
-
     try {
-      res = await axios.get(`/api/readings/${plant}`);
+      const res = await axios.get(`/api/readings/${plant}`);
       setReadings(res.data);
-      notifications.show({
-        title: 'Data Reloaded',
-        message: 'Latest sensor data fetched!',
-      });
-      const latestWatered = res.data.find((r) => r.watered === true);
+      notifications.show({ title: 'Data Reloaded', message: 'Latest sensor data fetched!' });
 
+      const latestWatered = res.data.find((r) => r.watered === true);
       if (latestWatered) {
-        await axios.put(`/api/plants/${plant}`, {
-          last_water: new Date(latestWatered.timestamp).toISOString(),
-        });
+        await axios.put(`/api/plants/${plant}`, { last_water: new Date(latestWatered.timestamp).toISOString() });
       }
-    } catch (err) {
-      notifications.show({
-        title: 'Error',
-        message: 'Failed to reload data',
-        color: 'red',
-      });
+    } catch {
+      notifications.show({ title: 'Error', message: 'Failed to reload data', color: 'red' });
     } finally {
       setReloading(false);
     }
   };
 
+  // Manually set the plant's last_water to "Today"
   const handleWaterPlant = async () => {
     try {
-      await axios.put(`/api/plants/${plant}`, {
-        last_water: 'Today',
-      });
-      notifications.show({
-        title: 'Plant Watered',
-        message: 'Last_water updated!',
-      });
+      await axios.put(`/api/plants/${plant}`, { last_water: 'Today' });
+      notifications.show({ title: 'Plant Watered', message: 'Last_water updated!' });
+
       const updated = await axios.get(`/api/plants/${plant}`);
       setPlantData(updated.data);
-    } catch (err) {
-      notifications.show({
-        title: 'Error',
-        message: 'Failed to update water time',
-        color: 'red',
-      });
+    } catch {
+      notifications.show({ title: 'Error', message: 'Failed to update water time', color: 'red' });
     }
   };
 
+  // Check and store plant's health status based on latest reading
   const handleCheckStatus = async () => {
     setChecking(true);
     try {
       const status = calculateStatus(mostRecentReading);
       await axios.put(`/api/plants/${plant}`, { last_status: status });
-      notifications.show({
-        title: 'Status Checked',
-        message: `Status: ${status}`,
-      });
+      notifications.show({ title: 'Status Checked', message: `Status: ${status}` });
+
       const updated = await axios.get(`/api/plants/${plant}`);
       setPlantData(updated.data);
-    } catch (err) {
-      notifications.show({
-        title: 'Error',
-        message: 'Failed to check status',
-        color: 'red',
-      });
+    } catch {
+      notifications.show({ title: 'Error', message: 'Failed to check status', color: 'red' });
     } finally {
       setChecking(false);
     }
   };
 
+  // Delete plant from the database and return to dashboard
   const handleDeletePlant = async () => {
     try {
       await axios.delete(`/api/plants/${plant}`);
-      notifications.show({
-        title: 'Plant Deleted',
-        message: 'Redirecting to dashboard...',
-      });
+      notifications.show({ title: 'Plant Deleted', message: 'Redirecting to dashboard...' });
       router.push('/plants');
-    } catch (err) {
-      notifications.show({
-        title: 'Error',
-        message: 'Could not delete plant',
-        color: 'red',
-      });
+    } catch {
+      notifications.show({ title: 'Error', message: 'Could not delete plant', color: 'red' });
     }
   };
 
   const plantName = plantData.name;
 
-  //find most recent database document in readins collection
+  // Get most recent sensor reading
   const mostRecentReading = readings.reduce((latest, current) => {
-    return new Date(current.timestamp) > new Date(latest.timestamp)
-      ? current
-      : latest;
+    return new Date(current.timestamp) > new Date(latest.timestamp) ? current : latest;
   }, readings[0]);
 
-  //calculate plant status
-  //TODO: Update function for specific plants
+  // Determine plant health based on readings
   function calculateStatus({ soil_moisture, temperature, humidity, light }) {
     if (soil_moisture < 300) return 'Too much Water';
     if (soil_moisture > 650) return 'Needs Water';
@@ -169,129 +130,76 @@ export default function PlantPage() {
     return 'Healthy';
   }
 
+  // Filter readings by number of days
   const now = new Date();
-
-  //calulate time filtering by getting current date and find n days back of data
   const filterByDays = (n) => {
     const cutoff = new Date(now);
     cutoff.setDate(cutoff.getDate() - n);
     return readings.filter((r) => new Date(r.timestamp) >= cutoff);
   };
 
-  //if loading or no readings received from database yet, set loading overlay
+  // Show loader until data is ready
   if (loading || !readings.length) {
     return (
       <PageLayout>
-        <Center>
-          <Loader />
-        </Center>
+        <Center><Loader /></Center>
       </PageLayout>
     );
   }
 
+  // Main page content
   return (
     <PageLayout>
-      <div className='plant'>
-        <Title order={2} mb='sm'>
-          {plantName}
-        </Title>
-        {/*Display data from database about plant*/}
-        <SimpleGrid cols={2} verticalSpacing='xl'>
-          <Card padding='lg' radius='lg' withBorder>
-            <Stack gap='xs'>
-              <Group justify='space-between'>
-                <h3>Current Sensor Data</h3>
-                <Badge
-                  color={
-                    calculateStatus(mostRecentReading) === 'Healthy'
-                      ? 'green'
-                      : 'red'
-                  }
-                >
-                  {calculateStatus(mostRecentReading)}
-                </Badge>
-              </Group>
-              <Group>
-                <IconDroplet color='#4069bf' />
-                <p> Soil Moisture: {mostRecentReading.soil_moisture}</p>
-              </Group>
-              <Group>
-                <IconTemperature color='#e67700' />
-                <p> Temperature: {mostRecentReading.temperature}°F</p>
-              </Group>
-              <Group>
-                <IconCloudRain color='#1c7ed6' />
-                <p> Humidity: {mostRecentReading.humidity}%</p>
-              </Group>
-              <Group>
-                <IconSun color='#fab005' />
-                <p> Light: {mostRecentReading.light}</p>
-              </Group>
-              <Group>
-                <IconBucketDroplet color={'#2d3386'} />
-                {/*Date is displayed as BSON UTC, change formatting for more readable date */}
-                <p>
-                  Last Watered:{' '}
-                  {mostRecentReading?.watered
-                    ? new Date(mostRecentReading.timestamp).toLocaleString()
-                    : plantData.last_water}
-                </p>
-              </Group>
+      <div className="plant">
+        <Title order={2} mb="sm">{plantName}</Title>
 
-              <Text size='sm' c='dimmed' mb='xs'>
-                {new Date(mostRecentReading.timestamp).toLocaleString()}
-              </Text>
+        <SimpleGrid cols={2} verticalSpacing="xl">
+          {/* Sensor readings card */}
+          <Card className="sensor-card" padding="lg" radius="lg" withBorder>
+            <Stack gap="xs">
+              <Group justify="space-between">
+                <h3>Current Sensor Data</h3>
+                <Badge className="status-badge">{calculateStatus(mostRecentReading)}</Badge>
+              </Group>
+              <Group><IconDroplet color="#4069bf" /><p>Soil Moisture: {mostRecentReading.soil_moisture}</p></Group>
+              <Group><IconTemperature color="#e67700" /><p>Temperature: {mostRecentReading.temperature}°F</p></Group>
+              <Group><IconCloudRain color="#1c7ed6" /><p>Humidity: {mostRecentReading.humidity}%</p></Group>
+              <Group><IconSun color="#fab005" /><p>Light: {mostRecentReading.light}</p></Group>
+              <Group><IconBucketDroplet color="#2d3386" /><p>Last Watered: {mostRecentReading?.watered ? new Date(mostRecentReading.timestamp).toLocaleString() : plantData.last_water}</p></Group>
+              <Text size="sm" c="dimmed" mb="xs">{new Date(mostRecentReading.timestamp).toLocaleString()}</Text>
             </Stack>
           </Card>
-          {/*Action buttons */}
-          <Card padding='lg' radius='lg' withBorder>
+
+          {/* Action buttons */}
+          <Card padding="lg" radius="lg" withBorder>
             <SimpleGrid col={2}>
-              <Button onClick={handleReloadData} color='purple'>
-                Reload Data
-              </Button>
-              <Button onClick={handleWaterPlant} color='blue'>
-                Water Plant
-              </Button>
-              <Button onClick={handleCheckStatus} color='green'>
-                Check Status
-              </Button>
-              <Button onClick={handleDeletePlant} color='red'>
-                Delete Plant
-              </Button>
+              <Button onClick={handleReloadData} className="button-styled button-purple">Reload Data</Button>
+              <Button onClick={handleWaterPlant} className="button-styled button-blue">Water Plant</Button>
+              <Button onClick={handleCheckStatus} className="button-styled button-green">Check Status</Button>
+              <Button onClick={handleDeletePlant} className="button-styled button-red">Delete Plant</Button>
             </SimpleGrid>
           </Card>
-          {/*Tabs to display charts filtered by time*/}
-          <div className='timeFilterGraphs'>
-            <Tabs color='green' defaultValue='Day'>
+
+          {/* Time-filtered charts section */}
+          <div className="timeFilterGraphs">
+            <Tabs color="green" defaultValue="Day">
               <Tabs.List>
-                <Tabs.Tab value='Day' leftSection={<IconClock24 size={12} />}>
-                  Day
-                </Tabs.Tab>
-                <Tabs.Tab
-                  value='Week'
-                  leftSection={<IconCalendarWeek size={12} />}
-                >
-                  Week
-                </Tabs.Tab>
-                <Tabs.Tab
-                  value='Month'
-                  leftSection={<IconCalendarMonth size={12} />}
-                >
-                  Month
-                </Tabs.Tab>
+                <Tabs.Tab value="Day" leftSection={<IconClock24 size={12} />}>Day</Tabs.Tab>
+                <Tabs.Tab value="Week" leftSection={<IconCalendarWeek size={12} />}>Week</Tabs.Tab>
+                <Tabs.Tab value="Month" leftSection={<IconCalendarMonth size={12} />}>Month</Tabs.Tab>
               </Tabs.List>
-              {/*Choose number of days to filter time length and display charts */}
-              <Tabs.Panel value='Day'>
-                <Space h='xl' />
-                <ChartTabs data={filterByDays(1)} timeFilterChoice='Day' />
+
+              <Tabs.Panel value="Day">
+                <Space h="xl" />
+                <ChartTabs data={filterByDays(1)} timeFilterChoice="Day" />
               </Tabs.Panel>
-              <Tabs.Panel value='Week'>
-                <Space h='xl' />
-                <ChartTabs data={filterByDays(7)} timeFilterChoice='Week' />
+              <Tabs.Panel value="Week">
+                <Space h="xl" />
+                <ChartTabs data={filterByDays(7)} timeFilterChoice="Week" />
               </Tabs.Panel>
-              <Tabs.Panel value='Month'>
-                <Space h='xl' />
-                <ChartTabs data={filterByDays(30)} timeFilterChoice='Month' />
+              <Tabs.Panel value="Month">
+                <Space h="xl" />
+                <ChartTabs data={filterByDays(30)} timeFilterChoice="Month" />
               </Tabs.Panel>
             </Tabs>
           </div>

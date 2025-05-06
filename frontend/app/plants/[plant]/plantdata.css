@@ -1,0 +1,92 @@
+/*frontend\app\plants\[plant]\plantdata.css*/
+/*styling for plant data page*/
+
+/* frontend/app/plants/[plant]/plantdata.css */
+/* Styling for the Plant Data Page to match the aesthetic of the homepage and mockup */
+
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;700&display=swap');
+
+/* Main container for the plant detail page */
+.plant {
+  font-family: 'Cormorant Garamond', serif; 
+  background-color: #fffdf4;               
+  padding: 40px;                            /*inner spacing*/
+  background-image: url('/images/homePlant.jpg'); 
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: bottom center;
+}
+
+/* Card styling for the sensor data */
+.sensor-card {
+  background-color: rgba(255, 255, 255, 0.9); /*semitransparent white*/
+  border-radius: 24px;                       
+  padding: 24px;                             
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);  
+  color: #274e27;                           
+}
+
+/* Badge for showing the plant's status */
+.status-badge {
+  background-color: #e97451; 
+  color: white;
+  border-radius: 30px;        /* Pill shape */
+  padding: 6px 14px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+/* General button styling shared across all actions */
+.button-styled {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-weight: 500;
+  border-radius: 16px;
+  padding: 12px;
+  box-shadow: 4px 4px 0 #274e27;        
+  transition: all 0.2s ease-in-out;      /*hover effects*/
+}
+
+/* Themed button color classes */
+.button-purple { background-color: #8468a2; color: white; }
+.button-blue   { background-color: #79a9f0; color: white; }
+.button-green  { background-color: #97d98c; color: #274e27; }
+.button-red    { background-color: #f7b199; color: #274e27; }
+
+/* Hover effect for buttons */
+.button-styled:hover {
+  transform: translateY(-2px);           /*slight lift on hover */
+  box-shadow: 6px 6px 0 #274e27;         /*stronger shadow */
+}
+
+/* Wrapper for time-filtered chart tabs (Day, Week, Month) */
+.timeFilterGraphs {
+  margin-top: 40px;
+  background-color: rgba(255, 255, 255, 0.92);
+  padding: 1.5rem;
+  border-radius: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.07);
+}
+
+/* Container for chart + vertical tabs (ChartTabs.js) */
+.sensorGraphs {
+  margin-top: 2rem;
+  background-color: rgba(255, 255, 255, 0.85);
+  padding: 1.5rem;
+  border-radius: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.07);
+}
+
+/* Layout for vertical tabs + chart side-by-side */
+.chart-tabs {
+  display: flex;
+  gap: 2rem; /* Space between tab list and chart */
+}
+
+/* Styling for vertical tab list area */
+.chart-tab-list {
+  background-color: #f1f3f0;
+  padding: 1rem;
+  border-radius: 16px;
+}
