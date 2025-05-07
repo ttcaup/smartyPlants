@@ -1,3 +1,5 @@
+/* app\api\readings\route.js*/
+/*manages readings for all plants*/
 import clientPromise from '@/lib/mongo';
 import { NextResponse } from 'next/server';
 

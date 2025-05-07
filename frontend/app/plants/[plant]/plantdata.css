@@ -1,0 +1,134 @@
+/*frontend\app\plants\[plant]\plantdata.css*/
+/*styling for plant data page*/
+
+/* Import the Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;700&display=swap');
+
+/* Reset and background styling */
+html, body {
+  margin: 0;
+  padding: 0;
+  background: none;
+  background-color: transparent;
+  font-family: 'Cormorant Garamond', serif;
+}
+
+/* Plant page container */
+.plant {
+  min-height: 100vh;
+  padding: 40px;
+  background-image: url('/images/data.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  box-sizing: border-box;
+}
+
+/* Plant title styling */
+.plant-title {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.plant-title h2 {
+  font-size: 52px;
+  font-weight: 700;
+  color: #274e27;
+  margin: 0;
+}
+
+/* Sensor data card */
+.sensor-card {
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  color: #274e27;
+}
+
+/* Health status badge */
+.status-badge {
+  background-color: #e97451;
+  color: white;
+  border-radius: 30px;
+  padding: 6px 14px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+/* General button styling */
+.button-styled {
+  font-family: 'Georgia', serif;
+  font-size: 20px;
+  font-weight: 600;
+  border-radius: 20px;
+  padding: 16px 24px;
+  line-height: 1.6;
+  box-shadow: 4px 4px 0 #274e27;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  color: #274e27;
+}
+
+/* Fix consistent hover styling */
+.button-styled:hover {
+  transform: translateY(-2px);
+  box-shadow: 6px 6px 0 #274e27;
+}
+
+/* Action button container stacked vertically */
+.action-buttons.vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Consistent light background colors */
+.button-green-light {
+  background-color: #d5e8d4;
+}
+.button-blue-light {
+  background-color: #dae8fc;
+}
+.button-orange-light {
+  background-color: #f8cecc;
+}
+
+/* Chart containers */
+.timeFilterGraphs {
+  margin-top: 40px;
+  background-color: rgba(255, 255, 255, 0.92);
+  padding: 1.5rem;
+  border-radius: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.07);
+}
+
+.sensorGraphs {
+  margin-top: 2rem;
+  background-color: rgba(255, 255, 255, 0.85);
+  padding: 1.5rem;
+  border-radius: 20px;
+  width: 100%;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.07);
+}
+
+.chart-fullwidth {
+  grid-column: 1 / -1;
+}
+
+.chart-tabs {
+  display: flex;
+  gap: 2rem;
+}
+
+.chart-tab-list {
+  background-color: #f1f3f0;
+  padding: 1rem;
+  border-radius: 16px;
+}

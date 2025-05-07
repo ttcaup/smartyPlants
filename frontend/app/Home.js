@@ -1,49 +1,45 @@
+/*Home Page*/
+
+// import React from 'react';
+// import { Title, Button, Group } from '@mantine/core';
+// import { IconPlant } from '@tabler/icons-react';  // Tabler Icon
+// import Link from 'next/link';
+
 'use client';
-import { React, useState, useEffect } from 'react';
-import { Title, Group, Card, Text, Stack, Divider, Badge } from '@mantine/core';
-import { IconPlant } from '@tabler/icons-react';
-import axios from 'axios';
 import Link from 'next/link';
+import { IconClick } from '@tabler/icons-react';
+import './home.css';
 
 export default function Home() {
-  const [plants, setPlants] = useState([]);
-  useEffect(() => {
-    axios.get('/api/plants').then((res) => setPlants(res.data));
-  }, []);
-
   return (
     <div className='Home'>
-      <Group justify='space-between' align='center' mb='lg'>
-        <IconPlant size={32} />
-        <h1>SmartyPlants</h1>
-        <IconPlant size={32} />
-      </Group>
+      {/* Left side: logo + title + subtitle */}
+      <div className='left-section'>
+        <img src='./images/logo.png' alt='SmartyPlants Logo' className='logo' />
+        <div className='title-text'>
+          <h2 className='growing'>
+            The <span className='italic'>smart</span> way to plant.
+          </h2>
+        </div>
+        <p className='subtitle'>
+          Moisture, humidity, and light readings to take the best possible care
+          of your plants.
+        </p>
+      </div>
 
-      <Divider my='md' />
-
-      <Link href={`/plants`} style={{ textDecoration: 'none' }}>
-        <Card padding='lg' radius='lg' withBorder>
-          <Title order={4} mb='sm'>
-            Plants
-          </Title>
-          <Stack gap='md'>
-            {plants.map((plant) => {
-              return (
-                <Card key={plant._id} padding='lg' radius='md' withBorder>
-                  <Group justify='space-between' align='center'>
-                    <Text fw={500}>{plant.name}</Text>
-                    <Badge
-                      color={plant.last_status === 'Healthy' ? 'green' : 'red'}
-                    >
-                      {plant.last_status}
-                    </Badge>
-                  </Group>
-                </Card>
-              );
-            })}
-          </Stack>
-        </Card>
-      </Link>
+      {/* Right side: background + styled link */}
+      <div className='right-section'>
+        <Link href='/plants' className='all-plants-link'>
+          <div className='all-plants-btn'>
+            <span>
+              Your
+              <br />
+              Plants
+            </span>
+            <IconClick size={55} className='click-icon' />
+          </div>
+        </Link>
+      </div>
     </div>
   );
 }

@@ -1,4 +1,7 @@
+/*Individual Plant Page to display plant details and offer actions*/
+
 'use client';
+
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import {
@@ -6,7 +9,6 @@ import {
   Text,
   Badge,
   Group,
-  Divider,
   Stack,
   Loader,
   Button,
@@ -15,46 +17,49 @@ import {
   Space,
   Card,
   SimpleGrid,
-  Notification,
+  Modal,
 } from '@mantine/core';
 import PageLayout from '@/components/PageLayout';
 import { useRouter } from 'next/navigation';
-import { notifications, Notifications } from '@mantine/notifications';
+import { notifications } from '@mantine/notifications';
 import {
   IconDroplet,
   IconTemperature,
   IconSun,
   IconCloudRain,
+  IconBucketDroplet,
   IconCalendarMonth,
   IconCalendarWeek,
   IconClock24,
 } from '@tabler/icons-react';
 import axios from 'axios';
 import ChartTabs from '@/components/ChartTabs';
+import './plantdata.css'; // custom styling for this plant page
 
 export default function PlantPage() {
-  const { plant } = useParams();
+  const { plant } = useParams(); // gets plant name from URL
+  const router = useRouter(); // for redirection
   const [readings, setReadings] = useState([]);
   const [plantData, setPlantData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // Loading screen toggle
+  const [reloading, setReloading] = useState(false); // Reload button toggle
+  const [checking, setChecking] = useState(false); // Check Status button toggle
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
+  // Fetch plant and reading data from API on mount
   useEffect(() => {
     axios
       .get(`/api/readings/${plant}`)
       .then((res) => setReadings(res.data))
-      .catch((err) => console.error(err));
-
+      .catch(console.error);
     axios
       .get(`/api/plants/${plant}`)
       .then((res) => setPlantData(res.data))
-      .catch((err) => console.log(err))
+      .catch(console.error)
       .finally(() => setLoading(false));
   }, [plant]);
 
-  const router = useRouter();
-  const [reloading, setReloading] = useState(false);
-  const [checking, setChecking] = useState(false);
-
+  // Reload readings and update last_watered if watered
   const handleReloadData = async () => {
     setReloading(true);
     try {
@@ -64,7 +69,14 @@ export default function PlantPage() {
         title: 'Data Reloaded',
         message: 'Latest sensor data fetched!',
       });
-    } catch (err) {
+
+      const latestWatered = res.data.find((r) => r.watered === true);
+      if (latestWatered) {
+        await axios.put(`/api/plants/${plant}`, {
+          last_watered: new Date(latestWatered.timestamp).toISOString(),
+        });
+      }
+    } catch {
       notifications.show({
         title: 'Error',
         message: 'Failed to reload data',
@@ -75,18 +87,18 @@ export default function PlantPage() {
     }
   };
 
+  // Manually set the plant's last_water to "Today"
   const handleWaterPlant = async () => {
     try {
-      await axios.put(`/api/plants/${plant}`, {
-        last_water: 'Today',
-      });
+      await axios.put(`/api/plants/${plant}`, { last_watered: new Date() });
       notifications.show({
         title: 'Plant Watered',
-        message: 'Last_water updated!',
+        message: 'Last_watered updated!',
       });
+
       const updated = await axios.get(`/api/plants/${plant}`);
       setPlantData(updated.data);
-    } catch (err) {
+    } catch {
       notifications.show({
         title: 'Error',
         message: 'Failed to update water time',
@@ -95,18 +107,20 @@ export default function PlantPage() {
     }
   };
 
+  // Check and store plant's health status based on latest reading
   const handleCheckStatus = async () => {
     setChecking(true);
     try {
-      const status = calculateStatus(mostRecentReading);
+      const status = calculatePlantStatus(mostRecentReading);
       await axios.put(`/api/plants/${plant}`, { last_status: status });
       notifications.show({
         title: 'Status Checked',
         message: `Status: ${status}`,
       });
+
       const updated = await axios.get(`/api/plants/${plant}`);
       setPlantData(updated.data);
-    } catch (err) {
+    } catch {
       notifications.show({
         title: 'Error',
         message: 'Failed to check status',
@@ -117,6 +131,7 @@ export default function PlantPage() {
     }
   };
 
+  // Delete plant from the database and return to dashboard
   const handleDeletePlant = async () => {
     try {
       await axios.delete(`/api/plants/${plant}`);
@@ -125,7 +140,7 @@ export default function PlantPage() {
         message: 'Redirecting to dashboard...',
       });
       router.push('/plants');
-    } catch (err) {
+    } catch {
       notifications.show({
         title: 'Error',
         message: 'Could not delete plant',
@@ -136,37 +151,77 @@ export default function PlantPage() {
 
   const plantName = plantData.name;
 
+  // Get most recent sensor reading
   const mostRecentReading = readings.reduce((latest, current) => {
     return new Date(current.timestamp) > new Date(latest.timestamp)
       ? current
       : latest;
   }, readings[0]);
 
-  function calculateStatus({ soil_moisture, temperature, humidity, light }) {
+  //calculate status for specific plants or general
+  function calculatePlantStatus({
+    plant_info,
+    soil_moisture,
+    temperature,
+    humidity,
+    light,
+  }) {
+    if (plant_info.plant_link === 'monstera') {
+      return calculateStatusForMonstera({
+        soil_moisture,
+        temperature,
+        humidity,
+        light,
+      });
+    }
+    return calculateStatusGeneral(soil_moisture, temperature, humidity, light);
+  }
+
+  //calculate generic plant status
+  function calculateStatusGeneral({
+    soil_moisture,
+    temperature,
+    humidity,
+    light,
+  }) {
     if (soil_moisture < 300) return 'Too much Water';
     if (soil_moisture > 650) return 'Needs Water';
     if (temperature > 90) return 'Too Hot';
     if (temperature < 40) return 'Too Cold';
     if (humidity < 30) return 'Too Dry';
     if (humidity > 60) return 'Too Humid';
-    if (light < 100) return 'Needs Light';
-    if (light > 400) return 'Too Bright';
+    if (light < 100) return 'Too Bright';
+    if (light > 600) return 'Needs Light';
+    return 'Healthy';
+  }
+  //calculate status for monstera plant
+  function calculateStatusForMonstera({
+    soil_moisture,
+    temperature,
+    humidity,
+    light,
+  }) {
+    if (soil_moisture < 300) return 'Too much Water';
+    if (soil_moisture > 500) return 'Needs Water';
+    if (temperature > 85) return 'Too Hot';
+    if (temperature < 65) return 'Too Cold';
+    if (humidity < 60) return 'Too Dry';
+    if (humidity > 70) return 'Too Humid';
+    if (light < 150) return 'Too Bright';
+    if (light > 350) return 'Needs Light';
     return 'Healthy';
   }
 
+  // Filter readings by number of days
   const now = new Date();
-
   const filterByDays = (n) => {
     const cutoff = new Date(now);
     cutoff.setDate(cutoff.getDate() - n);
     return readings.filter((r) => new Date(r.timestamp) >= cutoff);
   };
 
-  const filteredDayData = filterByDays(1);
-  const filteredWeekData = filterByDays(7);
-  const filteredMonthData = filterByDays(30);
-
-  if (loading) {
+  // Show loader until data is ready
+  if (loading || !readings.length) {
     return (
       <PageLayout>
         <Center>
@@ -176,76 +231,93 @@ export default function PlantPage() {
     );
   }
 
-  if (!readings.length) {
-    return (
-      <PageLayout>
-        <h1>{plantName}</h1>
-        <Divider mb='md' />
-        <Text>No readings found for {plantName}.</Text>
-      </PageLayout>
-    );
-  }
-
+  // Main page content
   return (
     <PageLayout>
       <div className='plant'>
-        <Title order={2} mb='sm'>
-          {plantName}
-        </Title>
+        <div className='plant-title'>
+          <h2>{plantName}</h2>
+        </div>
         <SimpleGrid cols={2} verticalSpacing='xl'>
-          <Card padding='lg' radius='lg' withBorder>
+          {/* Sensor readings card */}
+          <Card className='sensor-card' padding='lg' radius='lg' withBorder>
             <Stack gap='xs'>
               <Group justify='space-between'>
                 <h3>Current Sensor Data</h3>
                 <Badge
+                  className='status-badge'
                   color={
-                    calculateStatus(mostRecentReading) === 'Healthy'
+                    calculatePlantStatus(mostRecentReading) === 'Healthy'
                       ? 'green'
                       : 'red'
                   }
                 >
-                  {calculateStatus(mostRecentReading)}
+                  {calculatePlantStatus(mostRecentReading)}
                 </Badge>
               </Group>
               <Group>
                 <IconDroplet color='#4069bf' />
-                <p> Soil Moisture: {mostRecentReading.soil_moisture}</p>
+                <p>Soil Moisture: {mostRecentReading.soil_moisture}</p>
               </Group>
               <Group>
                 <IconTemperature color='#e67700' />
-                <p> Temperature: {mostRecentReading.temperature}°F</p>
+                <p>Temperature: {mostRecentReading.temperature}°F</p>
               </Group>
               <Group>
                 <IconCloudRain color='#1c7ed6' />
-                <p> Humidity: {mostRecentReading.humidity}%</p>
+                <p>Humidity: {mostRecentReading.humidity}%</p>
               </Group>
               <Group>
                 <IconSun color='#fab005' />
-                <p> Light: {mostRecentReading.light}</p>
+                <p>Light: {mostRecentReading.light}</p>
+              </Group>
+              <Group>
+                <IconBucketDroplet color='#2d3386' />
+                <p>
+                  Last Watered:{' '}
+                  {mostRecentReading?.watered
+                    ? new Date(mostRecentReading.timestamp).toLocaleString()
+                    : new Date(plantData.last_watered).toLocaleString()}
+                </p>
               </Group>
               <Text size='sm' c='dimmed' mb='xs'>
                 {new Date(mostRecentReading.timestamp).toLocaleString()}
               </Text>
             </Stack>
           </Card>
+
+          {/* Action buttons */}
           <Card padding='lg' radius='lg' withBorder>
-            <SimpleGrid col={2}>
-              <Button onClick={handleReloadData} color='purple'>
+            <div className='action-buttons vertical'>
+              <Button
+                className='button-styled button-blue-light'
+                onClick={handleReloadData}
+              >
                 Reload Data
               </Button>
-              <Button onClick={handleWaterPlant} color='blue'>
+              <Button
+                className='button-styled button-green-light'
+                onClick={handleWaterPlant}
+              >
                 Water Plant
               </Button>
-              <Button onClick={handleCheckStatus} color='green'>
+              <Button
+                className='button-styled button-green-light'
+                onClick={handleCheckStatus}
+              >
                 Check Status
               </Button>
-              <Button onClick={handleDeletePlant} color='red'>
+              <Button
+                className='button-styled button-orange-light'
+                onClick={handleDeletePlant}
+              >
                 Delete Plant
               </Button>
-            </SimpleGrid>
+            </div>
           </Card>
 
-          <div className='timeFilterGraphs'>
+          {/* Time-filtered charts section */}
+          <div className='timeFilterGraphs chart-fullwidth'>
             <Tabs color='green' defaultValue='Day'>
               <Tabs.List>
                 <Tabs.Tab value='Day' leftSection={<IconClock24 size={12} />}>
@@ -264,22 +336,40 @@ export default function PlantPage() {
                   Month
                 </Tabs.Tab>
               </Tabs.List>
+
               <Tabs.Panel value='Day'>
                 <Space h='xl' />
-                <ChartTabs data={filteredDayData} timeFilterChoice='Day' />
+                <ChartTabs data={filterByDays(1)} timeFilterChoice='Day' />
               </Tabs.Panel>
               <Tabs.Panel value='Week'>
                 <Space h='xl' />
-                <ChartTabs data={filteredWeekData} timeFilterChoice='Week' />
+                <ChartTabs data={filterByDays(7)} timeFilterChoice='Week' />
               </Tabs.Panel>
               <Tabs.Panel value='Month'>
                 <Space h='xl' />
-                <ChartTabs data={filteredMonthData} timeFilterChoice='Month' />
+                <ChartTabs data={filterByDays(30)} timeFilterChoice='Month' />
               </Tabs.Panel>
             </Tabs>
           </div>
         </SimpleGrid>
       </div>
+      <Modal
+        opened={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        title={`Delete ${plantName}?`}
+        centered
+      >
+        <Text>Are you sure you want to permanently delete this plant?</Text>
+
+        <Group justify='flex-end' mt='md'>
+          <Button variant='default' onClick={() => setDeleteModalOpen(false)}>
+            Cancel
+          </Button>
+          <Button color='red' onClick={handleDeletePlant}>
+            Delete
+          </Button>
+        </Group>
+      </Modal>
     </PageLayout>
   );
 }
