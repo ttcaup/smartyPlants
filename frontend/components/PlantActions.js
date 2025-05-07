@@ -96,11 +96,13 @@ export default function PlantAction({
         <Stack>
           <TextInput
             label='Name'
+            defaultValue='Plant'
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
           <TextInput
             label='Link'
+            defaultValue='plant'
             value={link}
             onChange={(e) => setLink(e.target.value)}
           />
