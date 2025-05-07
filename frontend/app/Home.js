@@ -22,8 +22,8 @@ export default function Home() {
           </h2>
         </div>
         <p className='subtitle'>
-          Moisture, humidity, and light readings to take the best possible care
-          of your plants.
+          Moisture, temperature, humidity, and light readings to take the best
+          possible care of your plants.
         </p>
       </div>
 

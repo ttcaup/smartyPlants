@@ -145,8 +145,8 @@ export default function PlantDashboard() {
                 </p>
                 <p>
                   <IconBucketDroplet size={16} style={{ marginRight: 6 }} />
-                  Last Watered:{' '}
-                  {format(plant.last_watered, 'MMM dd yyyy') || 'Unknown'}
+                  Last Watered:
+                  {new Date(plant.last_watered).toLocaleString() || 'Unknown'}
                 </p>
               </div>
 

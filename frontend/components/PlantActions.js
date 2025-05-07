@@ -16,7 +16,7 @@ import { DateInput } from '@mantine/dates';
 
 import { React, useState, useEffect } from 'react';
 import axios from 'axios';
-import { setHours, setMinutes, setSeconds } from 'date-fns';
+import { formatISO } from 'date-fns';
 
 export default function PlantAction({
   actionMode, // current mode: 'add', 'edit', or 'delete'
@@ -59,10 +59,10 @@ export default function PlantAction({
   // handle add form submission
   const handleAdd = async () => {
     await axios.post('/api/plants', {
-      name,
+      name: name,
       plant_link: link,
       last_status: status,
-      last_water: convertDateToBSONFormatting(lastWatered),
+      last_watered: formatISO(lastWatered),
     });
     refreshPlants();
     reset();
@@ -71,10 +71,12 @@ export default function PlantAction({
   // handle edit form submission
   const handleEdit = async () => {
     await axios.put(`/api/plants/${selectedPlant.plant_link}`, {
-      name,
-      plant_link: link,
-      last_status: status,
-      last_watered: convertDateToBSONFormatting(lastWatered),
+      name: name ? name : selectedPlant.name,
+      plant_link: selectedPlant.plant_link,
+      last_status: status ? status : selectedPlant.status,
+      last_watered: lastWatered
+        ? formatISO(lastWatered)
+        : selectedPlant.last_watered,
     });
     refreshPlants();
     reset();
@@ -85,16 +87,6 @@ export default function PlantAction({
     await axios.delete(`/api/plants/${selectedPlant.plant_link}`);
     refreshPlants();
     reset();
-  };
-
-  const convertDateToBSONFormatting = (date) => {
-    if (!date) return '';
-    const now = new Date();
-    const withTime = setHours(
-      setMinutes(setSeconds(date, now.getSeconds()), now.getMinutes()),
-      now.getHours()
-    );
-    return withTime;
   };
 
   return (
@@ -114,6 +106,7 @@ export default function PlantAction({
           />
           <Select
             label='Status'
+            defaultValue='Healthy'
             data={[
               'Healthy',
               'Needs Water',
@@ -177,7 +170,6 @@ export default function PlantAction({
           <DateInput
             clearable
             valueFormat='MMM DD YYYY'
-            defaultValue={new Date()}
             label='Last Watered'
             placeholder='Pick date'
             value={lastWatered}
