@@ -198,7 +198,7 @@ export default function PlantAction({
         onClose={reset}
         title='Confirm Deletion'
       >
-        <Text mb='md'>Delete plant "{selectedPlant?.name}"?</Text>
+        <Text mb='md'>Delete plant: {selectedPlant?.name}?</Text>
         <Group justify='flex-end'>
           <Button variant='default' onClick={reset}>
             Cancel
