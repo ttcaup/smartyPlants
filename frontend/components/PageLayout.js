@@ -1,6 +1,5 @@
 /*frontend\components\PageLayout.js*/
 /*deals with page layout - header*/
-'use client';
 import { AppShell, Image } from '@mantine/core';
 import { IconChevronDown } from '@tabler/icons-react';
 import Link from 'next/link';
@@ -19,7 +18,7 @@ function PageLayout({ children }) {
   };
 
   return (
-    <AppShell header={{ height: 70 }} padding="md">
+    <AppShell header={{ height: 70 }} padding='md'>
       <AppShell.Header
         style={{
           borderBottom: '2px solid #a5b49f',
@@ -31,13 +30,13 @@ function PageLayout({ children }) {
         }}
       >
         {/* Logo */}
-        <Link href="/">
+        <Link href='/'>
           <Image
-            src="/images/logo.png"
-            alt="Logo"
+            src='/images/logo.png'
+            alt='Logo'
             width={40}
             height={40}
-            fit="contain"
+            fit='contain'
             style={{ marginRight: '10px', verticalAlign: 'middle' }}
           />
         </Link>
@@ -45,25 +44,35 @@ function PageLayout({ children }) {
         {/* Navigation */}
         <div style={{ display: 'flex', gap: '2rem' }}>
           <Link
-            href="/"
+            href='/'
             style={navLinkStyle}
-            onMouseEnter={(e) => (e.currentTarget.style.textDecoration = 'underline')}
-            onMouseLeave={(e) => (e.currentTarget.style.textDecoration = 'none')}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.textDecoration = 'underline')
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.textDecoration = 'none')
+            }
           >
             Home <IconChevronDown size={16} />
           </Link>
           <Link
-            href="/plants"
+            href='/plants'
             style={navLinkStyle}
-            onMouseEnter={(e) => (e.currentTarget.style.textDecoration = 'underline')}
-            onMouseLeave={(e) => (e.currentTarget.style.textDecoration = 'none')}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.textDecoration = 'underline')
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.textDecoration = 'none')
+            }
           >
             All Plants <IconChevronDown size={16} />
           </Link>
         </div>
       </AppShell.Header>
 
-      <AppShell.Main>{children}</AppShell.Main>
+      <AppShell.Main>
+        <div className='page-layout'>{children}</div>
+      </AppShell.Main>
     </AppShell>
   );
 }

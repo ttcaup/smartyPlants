@@ -2,10 +2,7 @@
 /*main entry point for the application */
 'use client';
 import { MantineProvider } from '@mantine/core';
-import '@mantine/core/styles.css';
-import '@mantine/charts/styles.css';
-import '@mantine/notifications/styles.css';
-import Home from './Home';
+import Home from '../components/Home';
 
 export default function App() {
   return (

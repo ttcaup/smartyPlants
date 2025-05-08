@@ -15,7 +15,7 @@
 }
 
 /* base layout and typography */
-html, body {
+.plant-dashboard {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
@@ -32,7 +32,7 @@ html, body {
 }
 
 /* soft white overlay to brighten background */
-body::before {
+.plant-dashboard::before {
   content: '';
   position: fixed;
   inset: 0;
@@ -47,11 +47,11 @@ body::before {
   padding-bottom: 5rem;
 
   /* background image for dashboard only */
-  background-image: url('/images/dashboard.png');
-  background-repeat: no-repeat;
+  /* background-image: url('/images/dashboard.png'); 
+  background-repeat: no-repeat; 
   background-position: bottom center;
   background-size: cover;
-  background-attachment: fixed;
+  background-attachment: fixed; */
 }
 
 /* page heading */
@@ -61,6 +61,7 @@ body::before {
   font-weight: 600;
   margin: 0.5rem 0 0.5rem;
   color: var(--cream);
+  text-shadow: 2px 2px 4px var(--green-dark);
 }
 
 /* top action button group */
@@ -78,12 +79,14 @@ body::before {
   font-weight: 500;
   border-radius: 30px !important;
   padding: 0.5rem 2rem !important;
+  background-color: rgba(249, 248, 244, .80);
   box-shadow: 0 4px 8px rgba(39, 78, 39, 0.2);
   transition: transform 0.2s ease-in-out;
 }
 
 .action-buttons button:hover {
   transform: scale(1.03);
+  background-color: rgba(249, 248, 244);
 }
 
 /* plant card grid layout */

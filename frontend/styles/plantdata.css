@@ -5,16 +5,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;700&display=swap');
 
 /* Reset and background styling */
-html, body {
+/* html, body {
   margin: 0;
   padding: 0;
   background: none;
   background-color: transparent;
   font-family: 'Cormorant Garamond', serif;
-}
+} */
 
 /* Plant page container */
 .plant {
+  font-family: 'Cormorant Garamond', serif;
   min-height: 100vh;
   padding: 40px;
   background-image: url('/images/data.png');
@@ -31,9 +32,9 @@ html, body {
 }
 
 .plant-title h2 {
-  font-size: 52px;
+  font-size: 70px;
   font-weight: 700;
-  color: #274e27;
+  color: #f9f8f4;
   margin: 0;
 }
 
@@ -48,38 +49,41 @@ html, body {
 
 /* Health status badge */
 .status-badge {
-  background-color: #e97451;
-  color: white;
-  border-radius: 30px;
-  padding: 6px 14px;
+  color: #f9f8f4 !important;
   font-weight: bold;
   font-size: 14px;
+  text-align: center;
+  padding: 0.1rem 1rem;
+  border-radius: 1rem;
 }
+.badge-healthy {
+  background-color: #274e27;
+}
+
+.badge-unhealthy {
+  background-color: #d13a3a;
+}
+
 
 /* General button styling */
 .button-styled {
   font-family: 'Georgia', serif;
   font-size: 14px;
-  font-weight: 600;
   border-radius: 20px;
   padding: 16px 24px;
   line-height: 1.6;
   box-shadow: 4px 4px 0 #274e27;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   display: flex;
-  align-items: center;
   justify-content: center;
   text-align: center;
-  white-space: normal;
-  overflow-wrap: break-word;
-  word-break: break-word;
   color: #274e27;
 }
 
 /* Fix consistent hover styling */
 .button-styled:hover {
   transform: translateY(-2px);
-  box-shadow: 6px 6px 0 #274e27;
+  box-shadow: 6px 6px 0 #274e27bf;
 }
 
 /* Action button container stacked vertically */
@@ -91,13 +95,13 @@ html, body {
 
 /* Consistent light background colors */
 .button-green-light {
-  background-color: #d5e8d4;
+  background-color: #b5d8b4 !important;
 }
 .button-blue-light {
-  background-color: #dae8fc;
+  background-color: #a9b8cc !important;
 }
 .button-orange-light {
-  background-color: #f8cecc;
+  background-color: #d2acaa !important;
 }
 
 /* Chart containers */

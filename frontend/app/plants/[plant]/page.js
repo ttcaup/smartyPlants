@@ -5,7 +5,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import {
-  Title,
   Text,
   Badge,
   Group,
@@ -34,7 +33,6 @@ import {
 } from '@tabler/icons-react';
 import axios from 'axios';
 import ChartTabs from '@/components/ChartTabs';
-import './plantdata.css'; // custom styling for this plant page
 
 export default function PlantPage() {
   const { plant } = useParams(); // gets plant name from URL
@@ -43,7 +41,6 @@ export default function PlantPage() {
   const [plantData, setPlantData] = useState([]);
   const [loading, setLoading] = useState(true); // Loading screen toggle
   const [reloading, setReloading] = useState(false); // Reload button toggle
-  const [checking, setChecking] = useState(false); // Check Status button toggle
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   // Fetch plant and reading data from API on mount
@@ -69,6 +66,8 @@ export default function PlantPage() {
         title: 'Data Reloaded',
         message: 'Latest sensor data fetched!',
       });
+      const status = calculatePlantStatus(mostRecentReading);
+      await axios.put(`/api/plants/${plant}`, { last_status: status });
 
       const latestWatered = res.data.find((r) => r.watered === true);
       if (latestWatered) {
@@ -76,6 +75,9 @@ export default function PlantPage() {
           last_watered: new Date(latestWatered.timestamp).toISOString(),
         });
       }
+
+      const updated = await axios.get(`/api/plants/${plant}`);
+      setPlantData(updated.data);
     } catch {
       notifications.show({
         title: 'Error',
@@ -104,30 +106,6 @@ export default function PlantPage() {
         message: 'Failed to update water time',
         color: 'red',
       });
-    }
-  };
-
-  // Check and store plant's health status based on latest reading
-  const handleCheckStatus = async () => {
-    setChecking(true);
-    try {
-      const status = calculatePlantStatus(mostRecentReading);
-      await axios.put(`/api/plants/${plant}`, { last_status: status });
-      notifications.show({
-        title: 'Status Checked',
-        message: `Status: ${status}`,
-      });
-
-      const updated = await axios.get(`/api/plants/${plant}`);
-      setPlantData(updated.data);
-    } catch {
-      notifications.show({
-        title: 'Error',
-        message: 'Failed to check status',
-        color: 'red',
-      });
-    } finally {
-      setChecking(false);
     }
   };
 
@@ -231,10 +209,13 @@ export default function PlantPage() {
     );
   }
 
+  const status = mostRecentReading
+    ? calculatePlantStatus(mostRecentReading)
+    : null;
   // Main page content
   return (
-    <PageLayout>
-      <div className='plant'>
+    <div className='plant'>
+      <PageLayout>
         <div className='plant-title'>
           <h2>{plantName}</h2>
         </div>
@@ -244,16 +225,16 @@ export default function PlantPage() {
             <Stack gap='xs'>
               <Group justify='space-between'>
                 <h3>Current Sensor Data</h3>
-                <Badge
-                  className='status-badge'
-                  color={
-                    calculatePlantStatus(mostRecentReading) === 'Healthy'
-                      ? 'green'
-                      : 'red'
-                  }
-                >
-                  {calculatePlantStatus(mostRecentReading)}
-                </Badge>
+                {status && (
+                  <Badge
+                    size='lg'
+                    className={`status-badge ${
+                      status === 'Healthy' ? 'badge-healthy' : 'badge-unhealthy'
+                    }`}
+                  >
+                    {status}
+                  </Badge>
+                )}
               </Group>
               <Group>
                 <IconDroplet color='#4069bf' />
@@ -287,7 +268,8 @@ export default function PlantPage() {
           </Card>
 
           {/* Action buttons */}
-          <Card padding='lg' radius='lg' withBorder>
+          <Card className='sensor-card' spadding='lg' radius='lg' withBorder>
+            <h3>Plant Actions</h3>
             <div className='action-buttons vertical'>
               <Button
                 className='button-styled button-blue-light'
@@ -300,12 +282,6 @@ export default function PlantPage() {
                 onClick={handleWaterPlant}
               >
                 Water Plant
-              </Button>
-              <Button
-                className='button-styled button-green-light'
-                onClick={handleCheckStatus}
-              >
-                Check Status
               </Button>
               <Button
                 className='button-styled button-orange-light'
@@ -352,24 +328,24 @@ export default function PlantPage() {
             </Tabs>
           </div>
         </SimpleGrid>
-      </div>
-      <Modal
-        opened={deleteModalOpen}
-        onClose={() => setDeleteModalOpen(false)}
-        title={`Delete ${plantName}?`}
-        centered
-      >
-        <Text>Are you sure you want to permanently delete this plant?</Text>
+        <Modal
+          opened={deleteModalOpen}
+          onClose={() => setDeleteModalOpen(false)}
+          title={`Delete ${plantName}?`}
+          centered
+        >
+          <Text>Are you sure you want to permanently delete this plant?</Text>
 
-        <Group justify='flex-end' mt='md'>
-          <Button variant='default' onClick={() => setDeleteModalOpen(false)}>
-            Cancel
-          </Button>
-          <Button color='red' onClick={handleDeletePlant}>
-            Delete
-          </Button>
-        </Group>
-      </Modal>
-    </PageLayout>
+          <Group justify='flex-end' mt='md'>
+            <Button variant='default' onClick={() => setDeleteModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button color='red' onClick={handleDeletePlant}>
+              Delete
+            </Button>
+          </Group>
+        </Modal>
+      </PageLayout>
+    </div>
   );
 }

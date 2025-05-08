@@ -7,7 +7,6 @@ import axios from 'axios';
 import Link from 'next/link';
 import PlantAction from '@/components/PlantActions';
 import PageLayout from '@/components/PageLayout';
-import { format } from 'date-fns';
 
 import { Button, Loader, Center } from '@mantine/core';
 import {
@@ -16,8 +15,6 @@ import {
   IconPlant,
   IconPlantOff,
 } from '@tabler/icons-react';
-
-import './dashboard.css'; //styles for plant dashboard
 
 export default function PlantDashboard() {
   const [plants, setPlants] = useState([]); //plant objects
@@ -74,107 +71,109 @@ export default function PlantDashboard() {
 
   // render dashboard once data is loaded
   return (
-    <PageLayout>
-      {/* heading */}
-      <h2 className='page-title'>Plants</h2>
+    <div className='plant-dashboard'>
+      <PageLayout>
+        {/* heading */}
+        <h2 className='page-title'>Plants</h2>
 
-      {/* action buttons */}
-      <div className='action-buttons'>
-        <Button
-          color=' #f9f8f4'
-          variant='outline'
-          onClick={() => setActionMode('add')}
-        >
-          Add
-        </Button>
-        <Button
-          color=' #f9f8f4'
-          variant='outline'
-          onClick={() => setActionMode('edit')}
-        >
-          Edit
-        </Button>
-        <Button
-          color=' #f9f8f4'
-          variant='outline'
-          onClick={() => setActionMode('delete')}
-        >
-          Delete
-        </Button>
-
-        {/* cancel button appears when in an action mode */}
-        {actionMode && (
+        {/* action buttons */}
+        <div className='action-buttons'>
           <Button
-            variant='subtle'
-            color='gray'
-            onClick={() => setActionMode(null)}
+            color='#274e27'
+            variant='outline'
+            onClick={() => setActionMode('add')}
           >
-            Cancel {actionMode.charAt(0).toUpperCase() + actionMode.slice(1)}
+            Add
           </Button>
-        )}
-      </div>
+          <Button
+            color='#274e27'
+            variant='outline'
+            onClick={() => setActionMode('edit')}
+          >
+            Edit
+          </Button>
+          <Button
+            color='#274e27'
+            variant='outline'
+            onClick={() => setActionMode('delete')}
+          >
+            Delete
+          </Button>
 
-      {/* plant card grid */}
-      <div className='plant-grid'>
-        {plants.map((plant) => {
-          const reading = getReading(plant.plant_link); // gets latest reading
-          return (
-            <Link
-              href={`plants/${plant.plant_link}`}
-              className='plant-card'
-              key={plant.plant_link}
-              onClick={(e) => handleCardClick(e, plant)} // intercept if in edit/delete mode
+          {/* cancel button appears when in an action mode */}
+          {actionMode && (
+            <Button
+              variant='subtle'
+              color='gray'
+              onClick={() => setActionMode(null)}
             >
-              {/* plant name */}
-              <div className='plant-name'>{plant.name}</div>
+              Cancel {actionMode.charAt(0).toUpperCase() + actionMode.slice(1)}
+            </Button>
+          )}
+        </div>
 
-              {/* status badge */}
-              <span
-                className={`status-badge ${
-                  plant.last_status === 'Healthy' ? 'healthy' : 'unhealthy'
-                }`}
+        {/* plant card grid */}
+        <div className='plant-grid'>
+          {plants.map((plant) => {
+            const reading = getReading(plant.plant_link); // gets latest reading
+            return (
+              <Link
+                href={`plants/${plant.plant_link}`}
+                className='plant-card'
+                key={plant.plant_link}
+                onClick={(e) => handleCardClick(e, plant)} // intercept if in edit/delete mode
               >
-                {plant.last_status}
-              </span>
+                {/* plant name */}
+                <div className='plant-name'>{plant.name}</div>
 
-              {/* sensor summary info */}
-              <div className='reading-info'>
-                <p>
-                  <IconDroplet size={16} style={{ marginRight: 6 }} />
-                  Moisture: {reading.soil_moisture ?? 'N/A'}
-                </p>
-                <p>
-                  <IconBucketDroplet size={16} style={{ marginRight: 6 }} />
-                  Last Watered:
-                  {new Date(plant.last_watered).toLocaleString() || 'Unknown'}
-                </p>
-              </div>
+                {/* status badge */}
+                <span
+                  className={`status-badge ${
+                    plant.last_status === 'Healthy' ? 'healthy' : 'unhealthy'
+                  }`}
+                >
+                  {plant.last_status}
+                </span>
 
-              {/* bottom icon is based on health (so healthy or not helthy) */}
-              <div
-                className={`plant-icon ${
-                  plant.last_status === 'Healthy' ? 'healthy' : 'danger'
-                }`}
-              >
-                {plant.last_status === 'Healthy' ? (
-                  <IconPlant size={64} />
-                ) : (
-                  <IconPlantOff size={64} />
-                )}
-              </div>
-            </Link>
-          );
-        })}
-      </div>
+                {/* sensor summary info */}
+                <div className='reading-info'>
+                  <p>
+                    <IconDroplet size={16} style={{ marginRight: 6 }} />
+                    Moisture: {reading.soil_moisture ?? 'N/A'}
+                  </p>
+                  <p>
+                    <IconBucketDroplet size={16} style={{ marginRight: 6 }} />
+                    Last Watered:
+                    {new Date(plant.last_watered).toLocaleString() || 'Unknown'}
+                  </p>
+                </div>
 
-      {/* action modal (add/edit/delete logic) */}
-      <PlantAction
-        actionMode={actionMode}
-        setActionMode={setActionMode}
-        selectedPlant={selectedPlant}
-        setSelectedPlant={setSelectedPlant}
-        refreshPlants={refreshPlants}
-      />
-    </PageLayout>
+                {/* bottom icon is based on health (so healthy or not helthy) */}
+                <div
+                  className={`plant-icon ${
+                    plant.last_status === 'Healthy' ? 'healthy' : 'danger'
+                  }`}
+                >
+                  {plant.last_status === 'Healthy' ? (
+                    <IconPlant size={64} />
+                  ) : (
+                    <IconPlantOff size={64} />
+                  )}
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* action modal (add/edit/delete logic) */}
+        <PlantAction
+          actionMode={actionMode}
+          setActionMode={setActionMode}
+          selectedPlant={selectedPlant}
+          setSelectedPlant={setSelectedPlant}
+          refreshPlants={refreshPlants}
+        />
+      </PageLayout>
+    </div>
   );
 }

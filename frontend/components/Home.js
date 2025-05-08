@@ -1,14 +1,9 @@
 /*Home Page*/
 
-// import React from 'react';
-// import { Title, Button, Group } from '@mantine/core';
-// import { IconPlant } from '@tabler/icons-react';  // Tabler Icon
-// import Link from 'next/link';
-
 'use client';
+import React from 'react';
 import Link from 'next/link';
 import { IconClick } from '@tabler/icons-react';
-import './home.css';
 
 export default function Home() {
   return (
@@ -22,8 +17,10 @@ export default function Home() {
           </h2>
         </div>
         <p className='subtitle'>
-          Moisture, temperature, humidity, and light readings to take the best
-          possible care of your plants.
+          <span className='italic'>
+            Moisture, temperature, humidity, and light readings to take the best
+            possible care of your plants.
+          </span>
         </p>
       </div>
 
