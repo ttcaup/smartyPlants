@@ -43,7 +43,7 @@ export default function PlantPage() {
   const [reloading, setReloading] = useState(false); // Reload button toggle
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
-  // Fetch plant and reading data from API on mount
+  // Fetch plant and reading data from API on mounty
   useEffect(() => {
     axios
       .get(`/api/readings/${plant}`)

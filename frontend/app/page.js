@@ -2,7 +2,7 @@
 /*main entry point for the application */
 'use client';
 import { MantineProvider } from '@mantine/core';
-import Home from '../components/Home';
+import Home from '@/components/Home';
 
 export default function App() {
   return (
